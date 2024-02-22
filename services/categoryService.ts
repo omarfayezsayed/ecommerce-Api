@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction, response } from "express";
 import { Category } from "../models/category";
 import { asyncWrapper } from "../utils/asyncWrapper";
-import { appError } from "../utils/error";
-import { NullExpression } from "mongoose";
+import { apiError } from "../utils/apiError";
 export const createCategory = asyncWrapper(
   async (req: Request, res: Response) => {
     console.log(req.body);
@@ -34,7 +33,7 @@ export const getCategory = asyncWrapper(
     const category = await Category.findById(req.params.id);
     if (!category) {
       return next(
-        new appError(
+        new apiError(
           "no category with that id please try with another existence id",
           404
         )
@@ -52,7 +51,7 @@ export const deleteCategory = asyncWrapper(
     const category = await Category.deleteOne({ _id: req.params.id });
     if (!category.deletedCount) {
       return next(
-        new appError(
+        new apiError(
           "no category with that id please try with another existence id",
           404
         )
@@ -77,7 +76,7 @@ export const updateCategory = asyncWrapper(
     );
     if (!category) {
       return next(
-        new appError(
+        new apiError(
           "no category with that id please try with another existence id",
           404
         )

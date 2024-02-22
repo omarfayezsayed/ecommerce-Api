@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:prod": "ENV_VARIABLE=production nodemon ./dist/app.js",
     "dev": "npx tsc -w",
-    "start": "nodemon ./dist/app.js"
+    "start:dev": "nodemon ./dist/app.js"
   },
   "author": "omar fayez",
   "license": "ISC",

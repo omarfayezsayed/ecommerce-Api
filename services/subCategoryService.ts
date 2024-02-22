@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, response } from "express";
 import { Subcategory } from "../models/subCategory";
 import { asyncWrapper } from "../utils/asyncWrapper";
-import { appError } from "../utils/error";
+import { appError } from "../utils/apiError";
 import { Category } from "../models/category";
 
 export const createSubCategory = asyncWrapper(

@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
 
 export const connect = () => {
-  mongoose
-    .connect(`${process.env.DB_CONNECTION_STRING}`)
-    .then((res): void => {
-      console.log("dB connected successfully");
-    })
-    .catch((err): void => {
-      console.log("err connecting", err);
-    });
+  mongoose.connect(`${process.env.DB_CONNECTION_STRING}`).then((res): void => {
+    console.log("dB connected successfully");
+  });
 };
