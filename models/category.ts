@@ -1,11 +1,24 @@
-import mongoose from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
+import mongoose, {
+  Document,
+  DocumentDefinition,
+  Schema,
+  Types,
+} from "mongoose";
 
-const CategoryShema = new mongoose.Schema(
+export interface category {
+  name: String;
+  slug?: String;
+  image?: String;
+}
+export interface categoryDocumnet extends category, Document {}
+
+export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
   {
     name: {
       type: String,
       required: [true, "category must have a name"],
-      unique: [true, "category name must be unique"],
+      unique: true,
       minLength: [3, "minimum length for a name of the category is 3"],
       maxLength: [15, "maximum length for a name of the category is 15"],
     },
@@ -13,11 +26,20 @@ const CategoryShema = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
-    image: String,
+    image: {
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const Category = mongoose.model("Category", CategoryShema);
+CategorySchema.plugin(uniqueValidator, {
+  message: "should be unique",
+});
+export const Category = mongoose.model<categoryDocumnet>(
+  "Category",
+  CategorySchema
+);

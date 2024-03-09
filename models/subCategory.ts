@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 
-const CategoryShema = new mongoose.Schema(
+// export interface Subcategory {
+//   name: string;
+//   name
+// }
+const subCategorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "category must have a name"],
-      unique: [true, "category name must be unique"],
+      unique: true,
       minLength: [3, "minimum length for a name of the category is 3"],
       maxLength: [15, "maximum length for a name of the category is 15"],
     },
@@ -25,4 +29,4 @@ const CategoryShema = new mongoose.Schema(
   }
 );
 
-export const Subcategory = mongoose.model("subCategory", CategoryShema);
+export const Subcategory = mongoose.model("subCategory", subCategorySchema);

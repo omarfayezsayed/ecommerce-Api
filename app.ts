@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import { connect } from "./config/dbConnection";
 import { categoryRouter } from "./routes/category";
-import { subCategoryRouter } from "./routes/subCategory";
+// import { subCategoryRouter } from "./routes/subCategory";
 import {
   errorHandler,
   handleInvalidRoutes,
@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/v1/categories", categoryRouter);
-app.use("/api/v1/subCategories", subCategoryRouter);
+// app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("*", handleInvalidRoutes);
 // Global error Handler
 app.use(errorHandler);
@@ -33,7 +33,6 @@ app.listen(port, () => {
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log("-----------------------");
   console.error(`unhandledRejection Errors ${err}`);
   process.exit(1);
 });

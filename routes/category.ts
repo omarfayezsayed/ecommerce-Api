@@ -1,18 +1,40 @@
 import express from "express";
-import * as category from "../services/categoryService";
-// import { Category } from "../models/category";
-import { subCategoryRouter } from "./subCategory";
+import * as category from "../controllers/categoryController";
+import { categoryController } from "../controllers/categoryController";
+import {
+  createCategoryValidations,
+  getCategoryValidations,
+  deleteCategoryValidations,
+  updateCategoryValidations,
+} from "../middlewares/validations/categoryValidations";
+import { validationChecker } from "../middlewares/validationHandler";
 export const categoryRouter = express.Router();
-
-categoryRouter.use("/:id/subCategories", subCategoryRouter);
+const categoryHandler = new categoryController();
+// categoryRouter.use("/:id/subCategories", subCategoryRouter);
 
 categoryRouter
   .route("/")
-  .post(category.createCategory)
-  .get(category.getAllCategories);
+  .post([
+    createCategoryValidations,
+    validationChecker,
+    categoryHandler.createCategoryHandler,
+  ])
+  .get(categoryHandler.getAllCategoriesHandler);
 
 categoryRouter
   .route("/:id")
-  .get(category.getCategory)
-  .delete(category.deleteCategory)
-  .patch(category.updateCategory);
+  .get([
+    getCategoryValidations,
+    validationChecker,
+    categoryHandler.getCategoryHandler,
+  ])
+  .delete([
+    deleteCategoryValidations,
+    validationChecker,
+    categoryHandler.deleteCategoryHandler,
+  ])
+  .patch([
+    updateCategoryValidations,
+    validationChecker,
+    categoryHandler.updateCategoryHandler,
+  ]);

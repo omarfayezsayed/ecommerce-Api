@@ -1,5 +1,3 @@
-import { error } from "console";
-
 export class apiError extends Error {
   public statusCode: number;
   public isOperational = true;
