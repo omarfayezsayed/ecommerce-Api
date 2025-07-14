@@ -7,9 +7,9 @@ import mongoose, {
 } from "mongoose";
 
 export interface category {
-  name: String;
-  slug?: String;
-  image?: String;
+  name: string;
+  slug?: string;
+  image?: string;
 }
 export interface categoryDocumnet extends category, Document {}
 
@@ -36,9 +36,9 @@ export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
   }
 );
 
-CategorySchema.plugin(uniqueValidator, {
-  message: "should be unique",
-});
+// CategorySchema.plugin(uniqueValidator, {
+//   message: "should be unique",
+// });
 export const Category = mongoose.model<categoryDocumnet>(
   "Category",
   CategorySchema

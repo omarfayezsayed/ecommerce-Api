@@ -1,10 +1,14 @@
-import mongoose from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
+import mongoose, { Schema, Types, Document } from "mongoose";
 
-// export interface Subcategory {
-//   name: string;
-//   name
-// }
-const subCategorySchema = new mongoose.Schema(
+export interface subCategory {
+  name: string;
+  slug?: string;
+  image?: string;
+  category: Types.ObjectId;
+}
+export interface subCategoryDocument extends subCategory, Document {}
+const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
   {
     name: {
       type: String,
@@ -19,7 +23,7 @@ const subCategorySchema = new mongoose.Schema(
     },
     image: String,
     category: {
-      type: mongoose.SchemaTypes.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "SubCategory must have main category"],
     },
@@ -29,4 +33,10 @@ const subCategorySchema = new mongoose.Schema(
   }
 );
 
-export const Subcategory = mongoose.model("subCategory", subCategorySchema);
+// subCategorySchema.plugin(uniqueValidator, {
+//   message: "should be unique",
+// });
+export const Subcategory = mongoose.model<subCategoryDocument>(
+  "subCategory",
+  subCategorySchema
+);

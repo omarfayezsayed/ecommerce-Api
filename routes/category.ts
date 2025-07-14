@@ -1,5 +1,4 @@
 import express from "express";
-import * as category from "../controllers/categoryController";
 import { categoryController } from "../controllers/categoryController";
 import {
   createCategoryValidations,
@@ -8,10 +7,11 @@ import {
   updateCategoryValidations,
 } from "../middlewares/validations/categoryValidations";
 import { validationChecker } from "../middlewares/validationHandler";
+import { subCategoryRouter } from "./subCategory";
 export const categoryRouter = express.Router();
 const categoryHandler = new categoryController();
-// categoryRouter.use("/:id/subCategories", subCategoryRouter);
 
+categoryRouter.use("/:id/subCategories", subCategoryRouter); // nested route
 categoryRouter
   .route("/")
   .post([

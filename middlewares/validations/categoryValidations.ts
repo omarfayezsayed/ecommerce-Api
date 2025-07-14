@@ -1,34 +1,25 @@
-import { NextFunction } from "express";
+import { check } from "express-validator";
 import {
-  check,
-  Result,
-  validationResult,
-  ValidationError,
-} from "express-validator";
+  validateName,
+  validateId,
+  validateImage,
+  validateSlug,
+  validateNameOptional,
+} from "../validationUtils";
 
 export const createCategoryValidations = [
-  check("name")
-    .notEmpty()
-    .isLength({ min: 3, max: 15 })
-    .withMessage("name must be string with length between (3,10)"),
-  check("slug").optional().notEmpty().withMessage("slug sholud be not empty"),
-  check("image").optional().notEmpty().withMessage("image sholud be not empty"),
+  validateName(3, 15),
+  validateSlug,
+  validateImage,
 ];
 
-export const getCategoryValidations = [
-  check("id").isMongoId().withMessage("id should be a valid mongo Id"),
-];
+export const getCategoryValidations = [validateId];
 
-export const deleteCategoryValidations = [
-  check("id").isMongoId().withMessage("id should be a valid mongo Id"),
-];
+export const deleteCategoryValidations = [validateId];
 
 export const updateCategoryValidations = [
-  check("id").isMongoId().withMessage("id should be a valid mongo Id"),
-  check("name")
-    .optional()
-    .isLength({ min: 3, max: 15 })
-    .withMessage("name must be string with length between (3,10)"),
-  check("slug").optional().notEmpty().withMessage("slug sholud be not empty"),
-  check("image").optional().notEmpty().withMessage("image sholud be not empty"),
+  validateId,
+  validateNameOptional(3, 15),
+  validateSlug,
+  validateImage,
 ];

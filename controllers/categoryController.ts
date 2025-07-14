@@ -3,9 +3,10 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
 import { Category } from "../models/category";
-import { categoryService } from "../services/categoryService";
+import { categoryService } from "../services/category";
 import { category } from "../models/category";
 import slugify from "slugify";
+import { Types } from "mongoose";
 const CategoryDataLinklayer = new categoryService();
 
 export class categoryController {
@@ -40,7 +41,9 @@ export class categoryController {
 
   public getCategoryHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const category = await CategoryDataLinklayer.findCategory(req.params.id);
+      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
+
+      const category = await CategoryDataLinklayer.findCategory(categoryId);
       res.status(StatusCodes.OK).json({
         staus: "success",
         data: category,
@@ -50,7 +53,8 @@ export class categoryController {
 
   public deleteCategoryHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      await CategoryDataLinklayer.deleteCategory(req.params.id);
+      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
+      await CategoryDataLinklayer.deleteCategory(categoryId);
 
       res.status(StatusCodes.NO_CONTENT).json({
         status: "success",
@@ -60,8 +64,10 @@ export class categoryController {
 
   public updateCategoryHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
+      console.log(req.params.id);
+      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
       const category = await CategoryDataLinklayer.updateCategory(
-        req.params.id,
+        categoryId,
         req
       );
       res.status(StatusCodes.OK).json({

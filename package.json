@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:prod": "ENV_VARIABLE=production nodemon ./dist/dist.js",
+    "start:prod": "ENV_VARIABLE=production nodemon ./distjs/app.js",
     "dev": "npx tsc -w",
     "start:dev": "nodemon ./distjs/app.js"
   },

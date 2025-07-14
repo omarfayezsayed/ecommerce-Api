@@ -26,6 +26,7 @@ export const errorHandler = (
 ) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
+
   if (process.env.ENV_VARIABLE === "production") {
     sendProductionError(res, err);
   } else {

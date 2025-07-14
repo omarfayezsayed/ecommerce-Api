@@ -13,6 +13,7 @@ export const validationChecker = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.body);
   const result: Result<ValidationError> = validationResult(req);
   if (!result.isEmpty()) {
     console.log("hhh");
@@ -24,6 +25,5 @@ export const validationChecker = (
       .join(", ");
     return next(new apiError(wholeErrorMsg, StatusCodes.BAD_REQUEST));
   }
-
   return next();
 };

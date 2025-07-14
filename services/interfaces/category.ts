@@ -1,4 +1,4 @@
-import { Query } from "mongoose";
+import { Query, Types } from "mongoose";
 import { Request, Response } from "express";
 import { category, categoryDocumnet } from "../../models/category";
 
@@ -8,7 +8,7 @@ export interface Icategory {
     req: Request,
     query: Query<Array<categoryDocumnet>, categoryDocumnet>
   ): Promise<Array<categoryDocumnet>>;
-  findCategory(id: String): Promise<categoryDocumnet>;
-  updateCategory(id: String, req: Request): Promise<categoryDocumnet>;
-  deleteCategory(id: String): Promise<any>;
+  findCategory(id: Types.ObjectId): Promise<categoryDocumnet>;
+  updateCategory(id: Types.ObjectId, req: Request): Promise<categoryDocumnet>;
+  deleteCategory(id: Types.ObjectId): Promise<any>;
 }
