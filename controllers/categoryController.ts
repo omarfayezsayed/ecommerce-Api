@@ -3,11 +3,11 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
 import { Category } from "../models/category";
-import { categoryService } from "../services/category";
+import { mongoUserRepository } from "../repositories/category";
 import { category } from "../models/category";
 import slugify from "slugify";
 import { Types } from "mongoose";
-const CategoryDataLinklayer = new categoryService();
+const CategoryDataLinklayer = new mongoUserRepository();
 
 export class categoryController {
   public createCategoryHandler = asyncWrapper(

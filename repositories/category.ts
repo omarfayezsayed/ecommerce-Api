@@ -4,11 +4,11 @@ import { Request, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-import { Icategory } from "./interfaces/category";
+import { CategoryRepository } from "./interfaces/category";
 import { apiFeatures } from "../utils/apiFeatures";
 import slugify from "slugify";
 // import { category } from "../models/category";
-export class categoryService implements Icategory {
+export class mongoUserRepository implements CategoryRepository {
   constructor() {}
   public createCategory = async (
     categoryData: category
@@ -27,6 +27,7 @@ export class categoryService implements Icategory {
     query: Query<Array<categoryDocumnet>, categoryDocumnet>
   ): Promise<Array<categoryDocumnet>> => {
     try {
+      // console.log("inside");
       const features = new apiFeatures(req, query);
       return await features.pagination().fieldlimits().query;
     } catch (err: any) {

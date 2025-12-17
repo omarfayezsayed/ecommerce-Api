@@ -8,10 +8,10 @@ import { Query, Types } from "mongoose";
 import { Request, NextFunction } from "express";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-import { categoryService } from "./category";
+import { mongoUserRepository } from "./category";
 import { apiFeatures } from "../utils/apiFeatures";
-const categoryDataLinkLayer = new categoryService();
-export class subCategoryService implements IsubCategory {
+const categoryDataLinkLayer = new mongoUserRepository();
+export class submongoUserRepository implements IsubCategory {
   constructor() {}
   public createSubCategory = async (
     subCategoryData: subCategory

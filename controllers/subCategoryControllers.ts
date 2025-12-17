@@ -3,10 +3,10 @@ import { Subcategory, subCategory } from "../models/subCategory";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-import { subCategoryService } from "../services/subCategory";
+import { submongoUserRepository } from "../repositories/subCategory";
 import slugify from "slugify";
 import { Types } from "mongoose";
-const subCategoryDataLinkLayer = new subCategoryService();
+const subCategoryDataLinkLayer = new submongoUserRepository();
 
 export const addMainCategoryToReqBody = (
   req: Request,

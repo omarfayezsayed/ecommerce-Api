@@ -2,7 +2,7 @@ import { Query, Types } from "mongoose";
 import { Request, Response } from "express";
 import { category, categoryDocumnet } from "../../models/category";
 
-export interface Icategory {
+export interface CategoryRepository {
   createCategory(categoryData: category): Promise<categoryDocumnet>;
   findAllCategories(
     req: Request,

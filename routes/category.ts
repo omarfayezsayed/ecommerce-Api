@@ -1,40 +1,36 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import { categoryController } from "../controllers/categoryController";
-import {
-  createCategoryValidations,
-  getCategoryValidations,
-  deleteCategoryValidations,
-  updateCategoryValidations,
-} from "../middlewares/validations/categoryValidations";
-import { validationChecker } from "../middlewares/validationHandler";
 import { subCategoryRouter } from "./subCategory";
+import {
+  createCategoryDto,
+  getCategoryDto,
+  deleteCategoryDto,
+  updateCategoryDto,
+} from "../dto/categoryDto/categoryRequestDto";
+import { validationHandler } from "../middlewares/validationHandler2";
+
 export const categoryRouter = express.Router();
+
 const categoryHandler = new categoryController();
 
 categoryRouter.use("/:id/subCategories", subCategoryRouter); // nested route
+
 categoryRouter
   .route("/")
   .post([
-    createCategoryValidations,
-    validationChecker,
+    validationHandler(createCategoryDto),
     categoryHandler.createCategoryHandler,
   ])
   .get(categoryHandler.getAllCategoriesHandler);
 
 categoryRouter
   .route("/:id")
-  .get([
-    getCategoryValidations,
-    validationChecker,
-    categoryHandler.getCategoryHandler,
-  ])
+  .get([validationHandler(getCategoryDto), categoryHandler.getCategoryHandler])
   .delete([
-    deleteCategoryValidations,
-    validationChecker,
+    validationHandler(deleteCategoryDto),
     categoryHandler.deleteCategoryHandler,
   ])
   .patch([
-    updateCategoryValidations,
-    validationChecker,
+    validationHandler(updateCategoryDto),
     categoryHandler.updateCategoryHandler,
   ]);
