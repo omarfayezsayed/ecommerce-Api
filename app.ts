@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { connect } from "./config/dbConnection";
@@ -10,6 +10,15 @@ import {
   handleInvalidRoutes,
 } from "./middlewares/errorMiddlwares";
 import "reflect-metadata";
+
+import {
+  castError,
+  HandledError,
+  ErrorHandlingChain,
+  errorSender,
+  sendDevelopmentError2,
+  sendProductionError2,
+} from "./middlewares/errorMiddlwares";
 dotenv.config();
 const app = express();
 
@@ -26,7 +35,14 @@ app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);
 app.use("*", handleInvalidRoutes);
 // Global error Handler
-app.use(errorHandler);
+
+const errsender: errorSender = new sendDevelopmentError2();
+const castErrorHandler: ErrorHandlingChain = new castError(errsender);
+castErrorHandler.setNextHandler(new HandledError(errsender));
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  castErrorHandler.process(err, req, res, next);
+});
 
 // Server listening
 const port = process.env.PORT;
