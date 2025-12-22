@@ -21,7 +21,7 @@ const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
       type: String,
       lowercase: true,
     },
-    image: String,
+    image: { type: String, unique: true },
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",

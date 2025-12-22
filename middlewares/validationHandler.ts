@@ -1,29 +1,35 @@
+import { plainToClass, plainToInstance } from "class-transformer";
 import { NextFunction } from "express";
-import {
-  check,
-  Result,
-  validationResult,
-  ValidationError,
-} from "express-validator";
-import { apiError } from "../utils/apiError";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
+import { apiError } from "../utils/apiError";
+import { ClassConstructor } from "class-transformer";
+import { Request } from "express";
+export function validationHandler<T extends Object>(
+  dtoClass: ClassConstructor<T>,
+  properity: "params" | "body" | "query" = "body"
+) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const RequestData = plainToClass(dtoClass, req[properity], {
+      excludeExtraneousValues: true,
+    });
+    console.log(RequestData, "object");
+    console.log(req.params.id);
+    const validationErrors = await validate(RequestData, {
+      validationError: { target: false, value: true },
+    });
 
-export const validationChecker = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.log(req.body);
-  const result: Result<ValidationError> = validationResult(req);
-  if (!result.isEmpty()) {
-    console.log("hhh");
-    const wholeErrorMsg = result
-      .array()
-      .map((el) => {
-        return `${el.msg}`;
-      })
-      .join(", ");
-    return next(new apiError(wholeErrorMsg, StatusCodes.BAD_REQUEST));
-  }
-  return next();
-};
+    if (!validationErrors.length) {
+      if (properity === "body") req.body = RequestData;
+      return next();
+    }
+    console.log(RequestData);
+    const validationMessages = validationErrors.flatMap((error) => {
+      return error.constraints ? Object.values(error.constraints) : [];
+    });
+    const responseValidationMessage = validationMessages.join(", ");
+    return next(
+      new apiError(responseValidationMessage, StatusCodes.BAD_REQUEST)
+    );
+  };
+}

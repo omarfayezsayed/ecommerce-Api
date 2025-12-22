@@ -1,10 +1,5 @@
-import uniqueValidator from "mongoose-unique-validator";
-import mongoose, {
-  Document,
-  DocumentDefinition,
-  Schema,
-  Types,
-} from "mongoose";
+// import uniqueValidator from "mongoose-unique-validator";
+import mongoose, { Document } from "mongoose";
 
 export interface category {
   name: string;

@@ -6,7 +6,7 @@ import {
   updateBrandDto,
   getBrandDto,
 } from "../dto/brandDto/brandRequestDto";
-import { validationHandler } from "../middlewares/validationHandler2";
+import { validationHandler } from "../middlewares/validationHandler";
 export const brandRouter = express.Router();
 const brandHandler = new brandController();
 brandRouter

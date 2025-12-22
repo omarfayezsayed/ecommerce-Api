@@ -3,11 +3,10 @@ import { categoryController } from "../controllers/categoryController";
 import { subCategoryRouter } from "./subCategory";
 import {
   createCategoryDto,
-  getCategoryDto,
-  deleteCategoryDto,
   updateCategoryDto,
 } from "../dto/categoryDto/categoryRequestDto";
-import { validationHandler } from "../middlewares/validationHandler2";
+import { idParamDto } from "../dto/utils/idDto";
+import { validationHandler } from "../middlewares/validationHandler";
 
 export const categoryRouter = express.Router();
 
@@ -19,18 +18,22 @@ categoryRouter
   .route("/")
   .post([
     validationHandler(createCategoryDto),
-    categoryHandler.createCategoryHandler,
+    categoryHandler.createOneHandler,
   ])
   .get(categoryHandler.getAllCategoriesHandler);
 
 categoryRouter
   .route("/:id")
-  .get([validationHandler(getCategoryDto), categoryHandler.getCategoryHandler])
+  .get([
+    validationHandler(idParamDto, "params"),
+    categoryHandler.getCategoryHandler,
+  ])
   .delete([
-    validationHandler(deleteCategoryDto),
-    categoryHandler.deleteCategoryHandler,
+    validationHandler(idParamDto, "params"),
+    categoryHandler.deleteOneHandler,
   ])
   .patch([
+    validationHandler(idParamDto, "params"),
     validationHandler(updateCategoryDto),
-    categoryHandler.updateCategoryHandler,
+    categoryHandler.updateOneHandler,
   ]);

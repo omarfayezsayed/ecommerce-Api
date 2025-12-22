@@ -1,23 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
-import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-import { Category } from "../models/category";
-import { mongoUserRepository } from "../repositories/category";
-import { category } from "../models/category";
-import slugify from "slugify";
-import { Types } from "mongoose";
-const CategoryDataLinklayer = new mongoUserRepository();
+import { mongoCategoryRepository } from "../repositories/mongoCategory";
+import { categoryService } from "../services/category";
 
 export class categoryController {
-  public createCategoryHandler = asyncWrapper(
+  private categoryService = new categoryService(new mongoCategoryRepository());
+  public createOneHandler = asyncWrapper(
     async (req: Request, res: Response) => {
-      const categoryData: category = {
-        name: req.body.name,
-        image: req.body.image,
-      };
-      categoryData.slug = slugify(req.body.name);
-      const category = await CategoryDataLinklayer.createCategory(categoryData);
+      const category = await this.categoryService.createOne(req.body);
       res.status(StatusCodes.CREATED).json({
         status: "success",
         data: category,
@@ -27,10 +18,7 @@ export class categoryController {
 
   public getAllCategoriesHandler = asyncWrapper(
     async (req: Request, res: Response) => {
-      const categories = await CategoryDataLinklayer.findAllCategories(
-        req,
-        Category.find()
-      );
+      const categories = await this.categoryService.findAll();
       res.status(StatusCodes.OK).json({
         staus: "success",
         records: categories.length,
@@ -41,9 +29,7 @@ export class categoryController {
 
   public getCategoryHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
-
-      const category = await CategoryDataLinklayer.findCategory(categoryId);
+      const category = await this.categoryService.getCategory(req.params.id);
       res.status(StatusCodes.OK).json({
         staus: "success",
         data: category,
@@ -51,10 +37,9 @@ export class categoryController {
     }
   );
 
-  public deleteCategoryHandler = asyncWrapper(
+  public deleteOneHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
-      await CategoryDataLinklayer.deleteCategory(categoryId);
+      await this.categoryService.deleteOne(req.params.id);
 
       res.status(StatusCodes.NO_CONTENT).json({
         status: "success",
@@ -62,13 +47,11 @@ export class categoryController {
     }
   );
 
-  public updateCategoryHandler = asyncWrapper(
+  public updateOneHandler = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      console.log(req.params.id);
-      const categoryId: Types.ObjectId = new Types.ObjectId(req.params.id);
-      const category = await CategoryDataLinklayer.updateCategory(
-        categoryId,
-        req
+      const category = await this.categoryService.updateOne(
+        req.params.id,
+        req.body
       );
       res.status(StatusCodes.OK).json({
         status: "success",

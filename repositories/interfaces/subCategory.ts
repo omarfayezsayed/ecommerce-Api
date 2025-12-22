@@ -1,17 +1,16 @@
-import { Query, Types } from "mongoose";
-import { Request, Response } from "express";
-import { subCategory, subCategoryDocument } from "../../models/subCategory";
+import { subCategoryDocument } from "../../models/subCategory";
+import {
+  createSubCategoryDto,
+  updateSubCategoryDto,
+} from "../../dto/subCategoryDto/subCategoryRequestDto";
 
-export interface IsubCategory {
-  createSubCategory(categoryData: subCategory): Promise<subCategoryDocument>;
-  findAllSubCategories(
-    req: Request,
-    query: Query<Array<subCategoryDocument>, subCategoryDocument>
-  ): Promise<Array<subCategoryDocument>>;
-  findSubCategory(id: Types.ObjectId): Promise<subCategoryDocument>;
-  updateSubCategory(
-    id: Types.ObjectId,
-    req: Request
-  ): Promise<subCategoryDocument>;
-  deleteSubCategory(id: Types.ObjectId): Promise<any>;
+export interface subCategoryRepository {
+  createOne(data: createSubCategoryDto): Promise<subCategoryDocument>;
+  findAll(): Promise<Array<subCategoryDocument>>;
+  findOne(id: String): Promise<subCategoryDocument | null>;
+  updateOne(
+    id: String,
+    data: updateSubCategoryDto
+  ): Promise<subCategoryDocument | null>;
+  deleteOne(id: String): Promise<any>;
 }

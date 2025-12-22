@@ -1,0 +1,59 @@
+import slugify from "slugify";
+import { categoryDocumnet } from "../models/category";
+import { categoryRepository } from "../repositories/interfaces/category";
+import {
+  createCategoryDto,
+  updateCategoryDto,
+} from "../dto/categoryDto/categoryRequestDto";
+import { apiError } from "../utils/apiError";
+import { StatusCodes } from "http-status-codes";
+export class categoryService {
+  private repository: categoryRepository;
+  constructor(repo: categoryRepository) {
+    this.repository = repo;
+  }
+
+  public createOne = async (
+    data: createCategoryDto
+  ): Promise<categoryDocumnet> => {
+    data.slug = slugify(data.name);
+    const category = await this.repository.createOne(data);
+    return category;
+  };
+
+  public getCategory = async (id: string) => {
+    const category = await this.repository.findOne(id);
+    if (!category) {
+      throw new apiError(
+        `no category with that id:${id}`,
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return category;
+  };
+  updateOne = async (id: string, data: updateCategoryDto) => {
+    const category = await this.repository.updateOne(id, data);
+    if (!category) {
+      throw new apiError(
+        `no category with that id:${id}`,
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return category;
+  };
+  public deleteOne = async (id: string) => {
+    const category = await this.repository.deleteOne(id);
+    if (!category) {
+      throw new apiError(
+        `no category with that id :${id}`,
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return category;
+  };
+
+  public findAll = async () => {
+    const categories = await this.repository.findAll();
+    return categories;
+  };
+}
