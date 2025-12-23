@@ -1,10 +1,10 @@
-import { subCategoryRepository } from "./interfaces/subCategory";
+import { SubCategoryRepository } from "./interfaces/subCategory";
 import { Subcategory, subCategoryDocument } from "../models/subCategory";
 import {
   createSubCategoryDto,
   updateSubCategoryDto,
 } from "../dto/subCategoryDto/subCategoryRequestDto";
-export class mongoSubCategoryRepository implements subCategoryRepository {
+export class MongoSubCategoryRepository implements SubCategoryRepository {
   constructor() {}
 
   public createOne = async (
@@ -12,8 +12,12 @@ export class mongoSubCategoryRepository implements subCategoryRepository {
   ): Promise<subCategoryDocument> => {
     return await Subcategory.create(data);
   };
-  public findAll = async (): Promise<Array<subCategoryDocument>> => {
-    const categories = await Subcategory.find();
+  public findAll = async (id?: string): Promise<Array<subCategoryDocument>> => {
+    let query = {};
+    if (id) {
+      query = { category: id };
+    }
+    const categories = await Subcategory.find(query);
     return categories;
   };
   public findOne = async (id: String): Promise<subCategoryDocument | null> => {

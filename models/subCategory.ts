@@ -1,5 +1,7 @@
 import uniqueValidator from "mongoose-unique-validator";
 import mongoose, { Schema, Types, Document } from "mongoose";
+import { apiError } from "../utils/apiError";
+import { StatusCodes } from "http-status-codes";
 
 export interface subCategory {
   name: string;
@@ -25,6 +27,16 @@ const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
+      validate: {
+        validator: async function (category: any) {
+          const exists = await mongoose
+            .model("Category")
+            .exists({ _id: category });
+
+          return !!exists;
+        },
+        message: "Main category does not exist",
+      },
       required: [true, "SubCategory must have main category"],
     },
   },

@@ -6,7 +6,7 @@ import {
   updateCategoryDto,
 } from "../../dto/categoryDto/categoryRequestDto";
 
-export interface categoryRepository {
+export interface CategoryRepository {
   createOne(data: createCategoryDto): Promise<categoryDocumnet>;
   findAll(): Promise<Array<categoryDocumnet>>;
   findOne(id: String): Promise<categoryDocumnet | null>;

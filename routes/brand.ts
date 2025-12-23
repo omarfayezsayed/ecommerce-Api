@@ -1,21 +1,26 @@
 import express from "express";
-import { brandController } from "../controllers/brand";
+import { brandController } from "../composition/brand";
 import {
   createBrandDto,
-  deleteBrandDto,
   updateBrandDto,
-  getBrandDto,
 } from "../dto/brandDto/brandRequestDto";
+import { idParamDto } from "../dto/utils/idDto";
 import { validationHandler } from "../middlewares/validationHandler";
 export const brandRouter = express.Router();
-const brandHandler = new brandController();
 brandRouter
   .route("/")
-  .get([brandHandler.findAllBrandsHandler])
-  .post([validationHandler(createBrandDto), brandHandler.createBrandHandler]);
+  .get([brandController.findAllBrands])
+  .post([validationHandler(createBrandDto), brandController.createBrand]);
 
 brandRouter
   .route("/:id")
-  .get([validationHandler(getBrandDto), brandHandler.getBrandHandler])
-  .patch([validationHandler(updateBrandDto), brandHandler.updateBrandHandler])
-  .delete([validationHandler(deleteBrandDto), brandHandler.deleteBrandHandler]);
+  .get([validationHandler(idParamDto, "params"), brandController.getBrand])
+  .patch([
+    validationHandler(idParamDto, "params"),
+    validationHandler(updateBrandDto),
+    brandController.updateBrand,
+  ])
+  .delete([
+    validationHandler(idParamDto, "params"),
+    brandController.deleteBrand,
+  ]);

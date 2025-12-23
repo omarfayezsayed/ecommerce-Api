@@ -1,18 +1,23 @@
 import slugify from "slugify";
 import { categoryDocumnet } from "../models/category";
-import { categoryRepository } from "../repositories/interfaces/category";
+import { CategoryRepository } from "../repositories/interfaces/category";
 import {
   createCategoryDto,
   updateCategoryDto,
 } from "../dto/categoryDto/categoryRequestDto";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-export class categoryService {
-  private repository: categoryRepository;
-  constructor(repo: categoryRepository) {
+import { CategoryQuery } from "./interfaces/category";
+export class CategoryService implements CategoryQuery {
+  private repository: CategoryRepository;
+  constructor(repo: CategoryRepository) {
     this.repository = repo;
   }
+  public existsById = async (id: string): Promise<boolean> => {
+    const category = await this.repository.findOne(id);
 
+    return !!category;
+  };
   public createOne = async (
     data: createCategoryDto
   ): Promise<categoryDocumnet> => {

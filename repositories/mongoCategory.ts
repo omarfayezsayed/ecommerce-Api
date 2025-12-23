@@ -1,19 +1,13 @@
-import { Query, Types } from "mongoose";
-import { categoryDocumnet, Category, category } from "../models/category";
-import { Request, NextFunction } from "express";
-import { asyncWrapper } from "../utils/asyncWrapper";
-import { apiError } from "../utils/apiError";
-import { StatusCodes } from "http-status-codes";
-import { categoryRepository } from "./interfaces/category";
-import { apiFeatures } from "../utils/apiFeatures";
+import { categoryDocumnet, Category } from "../models/category";
+import { CategoryRepository } from "./interfaces/category";
 
 import {
   createCategoryDto,
   updateCategoryDto,
 } from "../dto/categoryDto/categoryRequestDto";
-// import { category } from "../models/category";
-export class mongoCategoryRepository implements categoryRepository {
+export class MongoCategoryRepository implements CategoryRepository {
   constructor() {}
+
   public createOne = async (
     categoryData: createCategoryDto
   ): Promise<categoryDocumnet> => {
@@ -41,7 +35,6 @@ export class mongoCategoryRepository implements categoryRepository {
   };
   public deleteOne = async (id: String): Promise<any> => {
     const category = await Category.findByIdAndDelete(id);
-
     return category;
   };
 }

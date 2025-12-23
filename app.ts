@@ -10,6 +10,7 @@ import "reflect-metadata";
 
 dotenv.config();
 import { errorChain } from "./middlewares/errors/handlingChain";
+import { apiError } from "./utils/apiError";
 const app = express();
 
 connect();
@@ -27,6 +28,8 @@ app.use("*", handleInvalidRoutes);
 
 // Global error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof apiError) console.log("trueee");
+  console.log(err.statusCode);
   errorChain.process(err, req, res, next);
 });
 

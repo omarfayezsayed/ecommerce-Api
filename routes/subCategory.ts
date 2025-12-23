@@ -1,43 +1,39 @@
 import express from "express";
 import { validationHandler } from "../middlewares/validationHandler";
-import {
-  subCategoryController,
-  addMainCategoryToReqBody,
-} from "../controllers/subCategoryControllers";
+import { addMainCategoryToReqBody } from "../controllers/subCategory";
 import {
   createSubCategoryDto,
   updateSubCategoryDto,
   getAllSubCategoryForMainCategory,
 } from "../dto/subCategoryDto/subCategoryRequestDto";
 import { idParamDto } from "../dto/utils/idDto";
-
+import { subCategoryController } from "../composition/subCategory";
 export const subCategoryRouter = express.Router({ mergeParams: true });
 
-const subCategoryHandler = new subCategoryController();
 subCategoryRouter
   .route("/")
   .post([
     addMainCategoryToReqBody,
     validationHandler(createSubCategoryDto),
-    subCategoryHandler.createSubCategoryHandler,
+    subCategoryController.createSubCategory,
   ])
   .get([
     validationHandler(getAllSubCategoryForMainCategory),
-    subCategoryHandler.getAllSubCategoriesHandler,
+    subCategoryController.getAllSubCategories,
   ]);
 
 subCategoryRouter
   .route("/:id")
   .get([
     validationHandler(idParamDto, "params"),
-    subCategoryHandler.getSubCategoryHandler,
+    subCategoryController.getSubCategory,
   ])
   .patch([
     validationHandler(idParamDto, "params"),
     validationHandler(updateSubCategoryDto),
-    subCategoryHandler.updateSubCategoryHandler,
+    subCategoryController.updateSubCategory,
   ])
   .delete([
     validationHandler(idParamDto, "params"),
-    subCategoryHandler.deleteSubCategoryHandler,
+    subCategoryController.deleteSubCategory,
   ]);

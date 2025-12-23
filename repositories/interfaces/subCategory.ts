@@ -4,13 +4,13 @@ import {
   updateSubCategoryDto,
 } from "../../dto/subCategoryDto/subCategoryRequestDto";
 
-export interface subCategoryRepository {
+export interface SubCategoryRepository {
   createOne(data: createSubCategoryDto): Promise<subCategoryDocument>;
-  findAll(): Promise<Array<subCategoryDocument>>;
-  findOne(id: String): Promise<subCategoryDocument | null>;
+  findAll(id?: string): Promise<Array<subCategoryDocument>>;
+  findOne(id: string): Promise<subCategoryDocument | null>;
   updateOne(
-    id: String,
+    id: string,
     data: updateSubCategoryDto
   ): Promise<subCategoryDocument | null>;
-  deleteOne(id: String): Promise<any>;
+  deleteOne(id: string): Promise<any>;
 }

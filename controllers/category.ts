@@ -1,22 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
-import { mongoCategoryRepository } from "../repositories/mongoCategory";
-import { categoryService } from "../services/category";
+import { CategoryService } from "../services/category";
 
-export class categoryController {
-  private categoryService = new categoryService(new mongoCategoryRepository());
-  public createOneHandler = asyncWrapper(
-    async (req: Request, res: Response) => {
-      const category = await this.categoryService.createOne(req.body);
-      res.status(StatusCodes.CREATED).json({
-        status: "success",
-        data: category,
-      });
-    }
-  );
+export class CategoryController {
+  private categoryService: CategoryService;
+  constructor(categoryService: CategoryService) {
+    this.categoryService = categoryService;
+  }
+  public createCategory = asyncWrapper(async (req: Request, res: Response) => {
+    const category = await this.categoryService.createOne(req.body);
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+      data: category,
+    });
+  });
 
-  public getAllCategoriesHandler = asyncWrapper(
+  public getAllCategories = asyncWrapper(
     async (req: Request, res: Response) => {
       const categories = await this.categoryService.findAll();
       res.status(StatusCodes.OK).json({
@@ -27,7 +27,7 @@ export class categoryController {
     }
   );
 
-  public getCategoryHandler = asyncWrapper(
+  public getCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const category = await this.categoryService.getCategory(req.params.id);
       res.status(StatusCodes.OK).json({
@@ -37,7 +37,7 @@ export class categoryController {
     }
   );
 
-  public deleteOneHandler = asyncWrapper(
+  public deleteCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       await this.categoryService.deleteOne(req.params.id);
 
@@ -47,7 +47,7 @@ export class categoryController {
     }
   );
 
-  public updateOneHandler = asyncWrapper(
+  public updateCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const category = await this.categoryService.updateOne(
         req.params.id,

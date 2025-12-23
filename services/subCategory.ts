@@ -1,22 +1,32 @@
 import slugify from "slugify";
-import { subCategory, subCategoryDocument } from "../models/subCategory";
-import { subCategoryRepository } from "../repositories/interfaces/subCategory";
+import { subCategoryDocument } from "../models/subCategory";
+import { SubCategoryRepository } from "../repositories/interfaces/subCategory";
 import {
   createSubCategoryDto,
   updateSubCategoryDto,
 } from "../dto/subCategoryDto/subCategoryRequestDto";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-export class subCategoryService {
-  private repository: subCategoryRepository;
-  constructor(repo: subCategoryRepository) {
+import { CategoryQuery } from "./interfaces/category";
+export class SubCategoryService {
+  private repository: SubCategoryRepository;
+  private categoryQuery: CategoryQuery;
+  constructor(repo: SubCategoryRepository, categoryQuery: CategoryQuery) {
     this.repository = repo;
+    this.categoryQuery = categoryQuery;
   }
 
   public createOne = async (
     data: createSubCategoryDto
   ): Promise<subCategoryDocument> => {
     data.slug = slugify(data.name);
+    const exists = await this.categoryQuery.existsById(data.category);
+    if (!exists) {
+      throw new apiError(
+        "main category does not exists",
+        StatusCodes.NOT_FOUND
+      );
+    }
     const subCategory = await this.repository.createOne(data);
     return subCategory;
   };
@@ -52,8 +62,17 @@ export class subCategoryService {
     return subCategorycategory;
   };
 
-  public findAll = async () => {
-    const subCategories = await this.repository.findAll();
+  public findAll = async (id?: string) => {
+    if (id) {
+      const exists = await this.categoryQuery.existsById(id);
+      if (!exists) {
+        throw new apiError(
+          "main category does not exists",
+          StatusCodes.NOT_FOUND
+        );
+      }
+    }
+    const subCategories = await this.repository.findAll(id);
     return subCategories;
   };
 }
