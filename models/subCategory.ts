@@ -5,9 +5,11 @@ import { StatusCodes } from "http-status-codes";
 
 export interface subCategory {
   name: string;
-  slug?: string;
+  slug: string;
   image?: string;
   category: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 export interface subCategoryDocument extends subCategory, Document {}
 const subCategorySchema = new mongoose.Schema<subCategoryDocument>(

@@ -2,8 +2,10 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface brand {
   name: string;
-  slug?: string;
+  slug: string;
   image?: string;
+  createdAt: Date;
+  updateAt: Date;
 }
 
 export interface brandDocument extends brand, Document {}

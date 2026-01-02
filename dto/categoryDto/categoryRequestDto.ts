@@ -4,7 +4,7 @@ import {
   IsString,
   Length,
   MinLength,
-  validate,
+  IsNotEmpty,
 } from "class-validator";
 import { Expose } from "class-transformer";
 export class createCategoryDto {
@@ -16,13 +16,13 @@ export class createCategoryDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 }
 
@@ -36,12 +36,12 @@ export class updateCategoryDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 }

@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "../services/category";
+import { CategoryResponseDto } from "../dto/categoryDto/CategoryRespponseDto";
+import { categoryDocumnet } from "../models/category";
 
 export class CategoryController {
   private categoryService: CategoryService;
@@ -12,17 +14,20 @@ export class CategoryController {
     const category = await this.categoryService.createOne(req.body);
     res.status(StatusCodes.CREATED).json({
       status: "success",
-      data: category,
+      data: this.toCategoryResponseDto(category),
     });
   });
 
   public getAllCategories = asyncWrapper(
     async (req: Request, res: Response) => {
       const categories = await this.categoryService.findAll();
+      const resCatogries = categories.map((cateory) =>
+        this.toCategoryResponseDto(cateory)
+      );
       res.status(StatusCodes.OK).json({
         staus: "success",
-        records: categories.length,
-        data: categories,
+        records: resCatogries.length,
+        data: resCatogries,
       });
     }
   );
@@ -30,9 +35,11 @@ export class CategoryController {
   public getCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const category = await this.categoryService.getCategory(req.params.id);
+      const { name, image, slug, id } = category;
+
       res.status(StatusCodes.OK).json({
         staus: "success",
-        data: category,
+        data: this.toCategoryResponseDto(category),
       });
     }
   );
@@ -55,8 +62,18 @@ export class CategoryController {
       );
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: category,
+        data: this.toCategoryResponseDto(category),
       });
     }
   );
+  private toCategoryResponseDto = (cateogry: categoryDocumnet) => {
+    const { name, image, slug, id } = cateogry;
+    const resCategory: CategoryResponseDto = {
+      id,
+      name,
+      image,
+      slug,
+    };
+    return resCategory;
+  };
 }

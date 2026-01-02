@@ -1,12 +1,5 @@
-import {
-  IsMongoId,
-  IsOptional,
-  IsString,
-  Length,
-  MinLength,
-} from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { Expose } from "class-transformer";
-import { Types } from "mongoose";
 export class createBrandDto {
   @Expose()
   @IsString()
@@ -16,13 +9,13 @@ export class createBrandDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 }
 
@@ -36,12 +29,12 @@ export class updateBrandDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 }

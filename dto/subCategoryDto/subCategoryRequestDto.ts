@@ -1,5 +1,6 @@
 import {
   IsMongoId,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Length,
@@ -15,13 +16,13 @@ export class createSubCategoryDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 
   @Expose()
@@ -40,13 +41,13 @@ export class updateSubCategoryDto {
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   slug!: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  @MinLength(5)
+  @IsNotEmpty()
   image!: string;
 
   @Expose()

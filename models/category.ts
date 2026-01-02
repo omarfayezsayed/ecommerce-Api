@@ -3,8 +3,10 @@ import mongoose, { Document } from "mongoose";
 
 export interface category {
   name: string;
-  slug?: string;
+  slug: string;
   image?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 export interface categoryDocumnet extends category, Document {}
 
