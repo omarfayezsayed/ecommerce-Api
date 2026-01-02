@@ -6,6 +6,7 @@ import {
   sendProductionError,
 } from "./errorChainTypes/errorSender";
 import { HandledError } from "./errorChainTypes/handled";
+import { validationError } from "./errorChainTypes/validationError";
 
 let errSender: errorSender;
 console.log(process.env.ENV_VARIABLE);
@@ -16,6 +17,8 @@ if (process.env.ENV_VARIABLE == "development") {
 }
 
 export const errorChain: ErrorHandlingChain = new duplicateKeyError(errSender);
-errorChain.setNextHandler(new HandledError(errSender));
+errorChain
+  .setNextHandler(new HandledError(errSender))
+  .setNextHandler(new validationError(errSender));
 
 // duplicateKeyErrorHandler.setNextHandler(new HandledError(errsender));

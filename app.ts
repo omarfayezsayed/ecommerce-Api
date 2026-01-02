@@ -29,7 +29,8 @@ app.use("*", handleInvalidRoutes);
 // Global error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof apiError) console.log("trueee");
-  console.log(err.statusCode);
+  console.log(err.name, "error name");
+  console.log(err.message);
   errorChain.process(err, req, res, next);
 });
 
