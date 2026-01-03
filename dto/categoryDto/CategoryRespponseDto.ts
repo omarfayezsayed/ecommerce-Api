@@ -1,6 +1,6 @@
-export class CategoryResponseDto {
-  id!: string;
-  name!: string;
-  slug!: string;
+export type CategoryResponseDto = {
+  id: string;
+  name: string;
+  slug: string;
   image?: string;
-}
+};

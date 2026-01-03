@@ -1,10 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { Request, Response } from "express";
-
 import { BrandService } from "../services/brand";
-import { BrandResponseDto } from "../dto/brandDto/brandResponseDto";
-import { brandDocument } from "../models/brand";
+import { toBrandResponseDto } from "../mappers/brandMapper";
 export class BrandController {
   private brandService: BrandService;
   constructor(brandService: BrandService) {
@@ -12,7 +10,7 @@ export class BrandController {
   }
   public findAllBrands = asyncWrapper(async (req: Request, res: Response) => {
     const brands = await this.brandService.findAll();
-    const resBrands = brands.map((brand) => this.toBrandResponseDto(brand));
+    const resBrands = brands.map((brand) => toBrandResponseDto(brand));
     res.status(StatusCodes.OK).json({
       status: "success",
       records: resBrands.length,
@@ -25,7 +23,7 @@ export class BrandController {
 
     res.status(StatusCodes.CREATED).json({
       status: "success",
-      data: this.toBrandResponseDto(brand),
+      data: toBrandResponseDto(brand),
     });
   });
 
@@ -33,7 +31,7 @@ export class BrandController {
     const brand = await this.brandService.getOne(req.params.id);
     res.status(StatusCodes.OK).json({
       staus: "success",
-      data: this.toBrandResponseDto(brand),
+      data: toBrandResponseDto(brand),
     });
   });
 
@@ -49,18 +47,7 @@ export class BrandController {
     const brand = await this.brandService.updateOne(req.params.id, req.body);
     res.status(StatusCodes.OK).json({
       status: "success",
-      data: this.toBrandResponseDto(brand),
+      data: toBrandResponseDto(brand),
     });
   });
-
-  private toBrandResponseDto = (brand: brandDocument) => {
-    const { name, slug, image, id } = brand;
-    const resBrand: BrandResponseDto = {
-      name,
-      slug,
-      image,
-      id,
-    };
-    return resBrand;
-  };
 }

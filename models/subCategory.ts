@@ -1,13 +1,13 @@
 import uniqueValidator from "mongoose-unique-validator";
-import mongoose, { Schema, Types, Document } from "mongoose";
-import { apiError } from "../utils/apiError";
-import { StatusCodes } from "http-status-codes";
+import mongoose, { Schema, Types, Document, Query } from "mongoose";
+
+import { category, categoryDocumnet } from "./category";
 
 export interface subCategory {
   name: string;
   slug: string;
   image?: string;
-  category: Types.ObjectId;
+  category: categoryDocumnet | Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,9 +47,11 @@ const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
   }
 );
 
-// subCategorySchema.plugin(uniqueValidator, {
-//   message: "should be unique",
-// });
+subCategorySchema.pre<subCategoryDocument>(/^find/, function (next) {
+  this.populate("category");
+  next();
+});
+
 export const Subcategory = mongoose.model<subCategoryDocument>(
   "subCategory",
   subCategorySchema

@@ -4,6 +4,8 @@ import { StatusCodes } from "http-status-codes";
 import { SubCategoryService } from "../services/subCategory";
 import { SubCategoryResponseDto } from "../dto/subCategoryDto/subCategoryResponseDto";
 import { subCategoryDocument } from "../models/subCategory";
+import { toSubCategoryResponseDto } from "../mappers/subCategoryMapper";
+import { stringify } from "node:querystring";
 export const addMainCategoryToReqBody = (
   req: Request,
   res: Response,
@@ -25,7 +27,7 @@ export class SubCategoryController {
       const subCategory = await this.subCategoryService.createOne(req.body);
       res.status(StatusCodes.CREATED).json({
         status: "success",
-        data: this.toSubCategoryResponseDto(subCategory),
+        data: toSubCategoryResponseDto(subCategory),
       });
     }
   );
@@ -35,8 +37,16 @@ export class SubCategoryController {
       const subCategories = await this.subCategoryService.findAll(
         req.params.id
       );
+      console.log(req.query, "query");
+      let queryString = JSON.stringify(req.query);
+
+      queryString = queryString.replace(/\b(lt|lte|gt|gte)\b/g, (match) => {
+        return `$${match}`;
+      });
+      console.log(queryString, "query string");
+      console.log(JSON.parse(queryString));
       const resSubCategories = subCategories.map((subCategory) =>
-        this.toSubCategoryResponseDto(subCategory)
+        toSubCategoryResponseDto(subCategory)
       );
       res.status(StatusCodes.OK).json({
         status: "success",
@@ -51,7 +61,7 @@ export class SubCategoryController {
       const subCategory = await this.subCategoryService.findOne(req.params.id);
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: this.toSubCategoryResponseDto(subCategory),
+        data: toSubCategoryResponseDto(subCategory),
       });
     }
   );
@@ -64,7 +74,7 @@ export class SubCategoryController {
       );
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: this.toSubCategoryResponseDto(subCategory),
+        data: toSubCategoryResponseDto(subCategory),
       });
     }
   );
@@ -79,15 +89,4 @@ export class SubCategoryController {
       });
     }
   );
-
-  private toSubCategoryResponseDto = (subCategory: subCategoryDocument) => {
-    const { name, slug, image, id } = subCategory;
-    const resSubCategory = {
-      name,
-      slug,
-      image,
-      id,
-    };
-    return resSubCategory;
-  };
 }

@@ -4,40 +4,43 @@ import {
   createSubCategoryDto,
   updateSubCategoryDto,
 } from "../dto/subCategoryDto/subCategoryRequestDto";
+import mongoose from "mongoose";
 export class MongoSubCategoryRepository implements SubCategoryRepository {
   constructor() {}
 
   public createOne = async (
     data: createSubCategoryDto
   ): Promise<subCategoryDocument> => {
-    return await Subcategory.create(data);
+    const subcategory: subCategoryDocument = await Subcategory.create(data);
+    console.log(typeof subcategory.category, "herer");
+    return subcategory;
   };
   public findAll = async (id?: string): Promise<Array<subCategoryDocument>> => {
     let query = {};
     if (id) {
       query = { category: id };
     }
-    const categories = await Subcategory.find(query);
-    return categories;
+    const subCategories = await Subcategory.find(query);
+    return subCategories;
   };
   public findOne = async (id: String): Promise<subCategoryDocument | null> => {
-    const category = await Subcategory.findById(id);
-    return category;
+    const subCategory = await Subcategory.findById(id);
+    return subCategory;
   };
   public updateOne = async (
     id: String,
     data: updateSubCategoryDto
   ): Promise<subCategoryDocument | null> => {
-    const category = await Subcategory.findByIdAndUpdate(id, data, {
+    const subCategory = await Subcategory.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
     });
 
-    return category;
+    return subCategory;
   };
   public deleteOne = async (id: String): Promise<any> => {
-    const category = await Subcategory.findByIdAndDelete(id);
+    const subCategory = await Subcategory.deleteOne();
 
-    return category;
+    return subCategory;
   };
 }

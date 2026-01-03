@@ -2,9 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "../services/category";
-import { CategoryResponseDto } from "../dto/categoryDto/CategoryRespponseDto";
-import { categoryDocumnet } from "../models/category";
-
+import { toCategoryResponseDto } from "../mappers/categoryMapper";
 export class CategoryController {
   private categoryService: CategoryService;
   constructor(categoryService: CategoryService) {
@@ -14,7 +12,7 @@ export class CategoryController {
     const category = await this.categoryService.createOne(req.body);
     res.status(StatusCodes.CREATED).json({
       status: "success",
-      data: this.toCategoryResponseDto(category),
+      data: toCategoryResponseDto(category),
     });
   });
 
@@ -22,7 +20,7 @@ export class CategoryController {
     async (req: Request, res: Response) => {
       const categories = await this.categoryService.findAll();
       const resCatogries = categories.map((cateory) =>
-        this.toCategoryResponseDto(cateory)
+        toCategoryResponseDto(cateory)
       );
       res.status(StatusCodes.OK).json({
         staus: "success",
@@ -39,7 +37,7 @@ export class CategoryController {
 
       res.status(StatusCodes.OK).json({
         staus: "success",
-        data: this.toCategoryResponseDto(category),
+        data: toCategoryResponseDto(category),
       });
     }
   );
@@ -62,18 +60,8 @@ export class CategoryController {
       );
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: this.toCategoryResponseDto(category),
+        data: toCategoryResponseDto(category),
       });
     }
   );
-  private toCategoryResponseDto = (cateogry: categoryDocumnet) => {
-    const { name, image, slug, id } = cateogry;
-    const resCategory: CategoryResponseDto = {
-      id,
-      name,
-      image,
-      slug,
-    };
-    return resCategory;
-  };
 }
