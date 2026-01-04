@@ -11,6 +11,7 @@ import "reflect-metadata";
 dotenv.config();
 import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
+import { productRouter } from "./routes/product";
 const app = express();
 
 connect();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);
+app.use("/api/v1/products", productRouter);
 app.use("*", handleInvalidRoutes);
 
 // Global error Handler

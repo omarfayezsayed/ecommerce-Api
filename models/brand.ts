@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import uniqueValidator from "mongoose-unique-validator";
 export interface brand {
   name: string;
   slug: string;
@@ -27,4 +27,7 @@ const brandSchema = new Schema<brandDocument>({
   },
 });
 
-export const Brand = mongoose.model<brandDocument>("brand", brandSchema);
+// brandSchema.plugin(uniqueValidator, {
+//   message: "already exists",
+// });
+export const Brand = mongoose.model<brandDocument>("Brand", brandSchema);

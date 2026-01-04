@@ -8,14 +8,20 @@ import {
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
 import { CategoryQuery } from "./interfaces/category";
-export class SubCategoryService {
+import { subCategoryQuery } from "./interfaces/subcategory";
+export class SubCategoryService implements subCategoryQuery {
   private repository: SubCategoryRepository;
   private categoryQuery: CategoryQuery;
   constructor(repo: SubCategoryRepository, categoryQuery: CategoryQuery) {
     this.repository = repo;
     this.categoryQuery = categoryQuery;
   }
-
+  public existsById = async (
+    id: string
+  ): Promise<subCategoryDocument | null> => {
+    const subcategory = await this.repository.findOne(id);
+    return subcategory;
+  };
   public createOne = async (
     data: createSubCategoryDto
   ): Promise<subCategoryDocument> => {

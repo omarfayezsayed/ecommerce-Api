@@ -14,10 +14,10 @@ export class CategoryService implements CategoryQuery {
     this.repository = repo;
   }
   public existsById = async (id: string): Promise<boolean> => {
-    const category = await this.repository.findOne(id);
-
-    return !!category;
+    const exists = await this.repository.findOne(id);
+    return !!exists;
   };
+
   public createOne = async (
     data: createCategoryDto
   ): Promise<categoryDocumnet> => {

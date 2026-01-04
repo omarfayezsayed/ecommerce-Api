@@ -48,11 +48,13 @@ const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
 );
 
 subCategorySchema.pre<subCategoryDocument>(/^find/, function (next) {
-  this.populate("category");
+  // this.populate("category");
+  // console.log("they called me");
+  // console.log(this.collection, "this");
   next();
 });
 
 export const Subcategory = mongoose.model<subCategoryDocument>(
-  "subCategory",
+  "SubCategory",
   subCategorySchema
 );

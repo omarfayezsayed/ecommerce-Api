@@ -7,12 +7,16 @@ import {
 } from "../dto/brandDto/brandRequestDto";
 import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
-export class BrandService {
+import { BrandQuery } from "./interfaces/brand";
+export class BrandService implements BrandQuery {
   private repository: BrandRepository;
   constructor(repo: BrandRepository) {
     this.repository = repo;
   }
-
+  public existsById = async (id: string): Promise<boolean> => {
+    const exists = await this.repository.findOne(id);
+    return !!exists;
+  };
   public createOne = async (data: createBrandDto): Promise<brandDocument> => {
     data.slug = slugify(data.name);
     const brand = await this.repository.createOne(data);
