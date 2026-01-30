@@ -1,21 +1,29 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { Request, Response } from "express";
-import { BrandService } from "../services/brand";
-import { toBrandResponseDto } from "../mappers/brandMapper";
+import { toProductResponseDto } from "../mappers/productMapper";
 import { ProductService } from "../services/product";
+import { queryParser } from "../utils/queryParser";
 export class ProductController {
   private productService: ProductService;
   constructor(productService: ProductService) {
     this.productService = productService;
   }
   public findAllProducts = asyncWrapper(async (req: Request, res: Response) => {
-    const products = await this.productService.findAll();
-
+    const parsedQuery = queryParser(req.query);
+    console.log(parsedQuery);
+    console.log("herere---", req.params.id);
+    const products = await this.productService.findAll(
+      req.params.id,
+      parsedQuery
+    );
+    const resProducts = products.map((product) =>
+      toProductResponseDto(product)
+    );
     res.status(StatusCodes.OK).json({
       status: "success",
-      records: products.length,
-      data: products,
+      records: resProducts.length,
+      data: resProducts,
     });
   });
 
@@ -24,7 +32,7 @@ export class ProductController {
 
     res.status(StatusCodes.CREATED).json({
       status: "success",
-      data: product,
+      data: toProductResponseDto(product),
     });
   });
 
@@ -32,7 +40,7 @@ export class ProductController {
     const product = await this.productService.getOne(req.params.id);
     res.status(StatusCodes.OK).json({
       staus: "success",
-      data: product,
+      data: toProductResponseDto(product),
     });
   });
 
@@ -51,7 +59,7 @@ export class ProductController {
     );
     res.status(StatusCodes.OK).json({
       status: "success",
-      data: product,
+      data: toProductResponseDto(product),
     });
   });
 }

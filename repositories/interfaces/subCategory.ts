@@ -6,7 +6,7 @@ import {
 
 export interface SubCategoryRepository {
   createOne(data: createSubCategoryDto): Promise<subCategoryDocument>;
-  findAll(id?: string): Promise<Array<subCategoryDocument>>;
+  findAll(id?: string, queryObj?: any): Promise<Array<subCategoryDocument>>;
   findOne(id: string): Promise<subCategoryDocument | null>;
   updateOne(
     id: string,

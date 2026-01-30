@@ -1,6 +1,6 @@
 export type BrandResponseDto = {
   id: string;
-  name: string;
+  name?: string;
   slug: string;
   image?: string;
 };

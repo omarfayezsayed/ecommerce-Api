@@ -6,7 +6,9 @@ import {
 } from "../dto/brandDto/brandRequestDto";
 import { idParamDto } from "../dto/utils/idDto";
 import { validationHandler } from "../middlewares/validationHandler";
+import { productRouter } from "./product";
 export const brandRouter = express.Router();
+brandRouter.use("/:id/products", productRouter);
 brandRouter
   .route("/")
   .get([brandController.findAllBrands])

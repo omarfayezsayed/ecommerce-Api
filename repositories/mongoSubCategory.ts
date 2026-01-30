@@ -5,6 +5,7 @@ import {
   updateSubCategoryDto,
 } from "../dto/subCategoryDto/subCategoryRequestDto";
 import mongoose from "mongoose";
+import { queryBuilder } from "../utils/queryBuilder";
 export class MongoSubCategoryRepository implements SubCategoryRepository {
   constructor() {}
 
@@ -15,13 +16,21 @@ export class MongoSubCategoryRepository implements SubCategoryRepository {
     console.log(typeof subcategory.category, "herer");
     return subcategory;
   };
-  public findAll = async (id?: string): Promise<Array<subCategoryDocument>> => {
-    let query = {};
+  public findAll = async (
+    id?: string,
+    queryObj?: any
+  ): Promise<Array<subCategoryDocument>> => {
+    let categorytId = {};
     if (id) {
-      query = { category: id };
+      categorytId = { category: id };
     }
-    const subCategories = await Subcategory.find(query).populate("category");
-    return subCategories;
+    const query = new queryBuilder(Subcategory.find(categorytId), queryObj)
+      .sort()
+      .fieldlimits()
+      .pagination()
+      .filter()
+      .build();
+    return await query;
   };
   public findOne = async (id: String): Promise<subCategoryDocument | null> => {
     const subCategory = await Subcategory.findById(id).populate("category");

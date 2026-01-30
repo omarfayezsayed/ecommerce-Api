@@ -8,7 +8,7 @@ import {
 
 export interface CategoryRepository {
   createOne(data: createCategoryDto): Promise<categoryDocumnet>;
-  findAll(): Promise<Array<categoryDocumnet>>;
+  findAll(queryObj?: any): Promise<Array<categoryDocumnet>>;
   findOne(id: String): Promise<categoryDocumnet | null>;
   updateOne(
     id: String,

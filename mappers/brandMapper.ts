@@ -3,6 +3,7 @@ import { brandDocument } from "../models/brand";
 
 export const toBrandResponseDto = (brand: brandDocument) => {
   const { name, slug, image, id } = brand;
+  console.log(name, slug, image, id);
   const resBrand: BrandResponseDto = {
     name,
     slug,

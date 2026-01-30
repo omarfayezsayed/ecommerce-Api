@@ -6,13 +6,20 @@ import {
   createBrandDto,
   updateBrandDto,
 } from "../dto/brandDto/brandRequestDto";
+import { queryBuilder } from "../utils/queryBuilder";
 export class MongoBrandRepository implements BrandRepository {
   constructor() {}
   public createOne = async (data: createBrandDto): Promise<brandDocument> => {
     return await Brand.create(data);
   };
-  public findAll = async (): Promise<Array<brandDocument>> => {
-    return await Brand.find();
+  public findAll = async (queryObj?: any): Promise<Array<brandDocument>> => {
+    const query = new queryBuilder(Brand.find(), queryObj)
+      .sort()
+      .fieldlimits()
+      .pagination()
+      .filter()
+      .build();
+    return await query;
   };
 
   public findOne = async (id: string): Promise<brandDocument> => {

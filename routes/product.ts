@@ -8,7 +8,7 @@ import { idParamDto } from "../dto/utils/idDto";
 import { validationHandler } from "../middlewares/validationHandler";
 import { productController } from "../composition/product";
 
-export const productRouter = express.Router();
+export const productRouter = express.Router({ mergeParams: true });
 
 // categoryRouter.use("/:id/subCategories", subCategoryRouter); // nested route
 

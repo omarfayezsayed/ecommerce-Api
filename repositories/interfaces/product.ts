@@ -6,7 +6,7 @@ import {
   createProductDto,
 } from "../../dto/productDto/productRequestDto";
 export interface ProductRepository {
-  findAll(): Promise<Array<productDocumnet>>;
+  findAll(id?: string, queryObj?: any): Promise<Array<productDocumnet>>;
   findOne(id: string): Promise<productDocumnet | null>;
   createOne(data: createProductDto): Promise<productDocumnet>;
   deleteOne(id: string): Promise<any>;

@@ -5,6 +5,7 @@ import {
   createCategoryDto,
   updateCategoryDto,
 } from "../dto/categoryDto/categoryRequestDto";
+import { queryBuilder } from "../utils/queryBuilder";
 export class MongoCategoryRepository implements CategoryRepository {
   constructor() {}
 
@@ -13,9 +14,14 @@ export class MongoCategoryRepository implements CategoryRepository {
   ): Promise<categoryDocumnet> => {
     return await Category.create(categoryData);
   };
-  public findAll = async (): Promise<Array<categoryDocumnet>> => {
-    const categories = await Category.find();
-    return categories;
+  public findAll = async (queryObj?: any): Promise<Array<categoryDocumnet>> => {
+    const query = new queryBuilder(Category.find(), queryObj)
+      .sort()
+      .fieldlimits()
+      .pagination()
+      .filter()
+      .build();
+    return await query;
   };
   public findOne = async (id: String): Promise<categoryDocumnet | null> => {
     const category = await Category.findById(id);

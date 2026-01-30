@@ -2,10 +2,9 @@ import { Request, Response, NextFunction, response } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { SubCategoryService } from "../services/subCategory";
-import { SubCategoryResponseDto } from "../dto/subCategoryDto/subCategoryResponseDto";
-import { subCategoryDocument } from "../models/subCategory";
+
 import { toSubCategoryResponseDto } from "../mappers/subCategoryMapper";
-import { stringify } from "node:querystring";
+import { queryParser } from "../utils/queryParser";
 export const addMainCategoryToReqBody = (
   req: Request,
   res: Response,
@@ -34,17 +33,11 @@ export class SubCategoryController {
 
   public getAllSubCategories = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
+      const parsedQuery = queryParser(req.query);
       const subCategories = await this.subCategoryService.findAll(
-        req.params.id
+        req.params.id,
+        parsedQuery
       );
-      console.log(req.query, "query");
-      let queryString = JSON.stringify(req.query);
-
-      queryString = queryString.replace(/\b(lt|lte|gt|gte)\b/g, (match) => {
-        return `$${match}`;
-      });
-      console.log(queryString, "query string");
-      console.log(JSON.parse(queryString));
       const resSubCategories = subCategories.map((subCategory) =>
         toSubCategoryResponseDto(subCategory)
       );

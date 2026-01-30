@@ -57,8 +57,8 @@ export class CategoryService implements CategoryQuery {
     return category;
   };
 
-  public findAll = async () => {
-    const categories = await this.repository.findAll();
+  public findAll = async (queryObj?: any) => {
+    const categories = await this.repository.findAll(queryObj);
     return categories;
   };
 }

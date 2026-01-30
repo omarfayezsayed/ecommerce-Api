@@ -5,5 +5,7 @@ export type SubCategoryResponseDto = {
   name: string;
   slug: string;
   image?: string;
-  category: string | CategoryResponseDto;
+  category?: string | CategoryResponseDto;
 };
+
+// This is just when i populate the subcategory when i find a product

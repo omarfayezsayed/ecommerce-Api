@@ -18,7 +18,7 @@ subCategoryRouter
     subCategoryController.createSubCategory,
   ])
   .get([
-    validationHandler(getAllSubCategoryForMainCategory),
+    validationHandler(getAllSubCategoryForMainCategory, "params"),
     subCategoryController.getAllSubCategories,
   ]);
 

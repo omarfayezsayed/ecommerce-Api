@@ -69,8 +69,8 @@ export class ProductService {
     return product;
   };
 
-  public findAll = async () => {
-    const products = await this.repository.findAll();
+  public findAll = async (id?: string, queryObj?: object) => {
+    const products = await this.repository.findAll(id, queryObj);
     return products;
   };
 

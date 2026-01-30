@@ -3,6 +3,8 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "../services/category";
 import { toCategoryResponseDto } from "../mappers/categoryMapper";
+import { queryParser } from "../utils/queryParser";
+
 export class CategoryController {
   private categoryService: CategoryService;
   constructor(categoryService: CategoryService) {
@@ -18,7 +20,8 @@ export class CategoryController {
 
   public getAllCategories = asyncWrapper(
     async (req: Request, res: Response) => {
-      const categories = await this.categoryService.findAll();
+      const parsedQuery = queryParser(req.query);
+      const categories = await this.categoryService.findAll(parsedQuery);
       const resCatogries = categories.map((cateory) =>
         toCategoryResponseDto(cateory)
       );

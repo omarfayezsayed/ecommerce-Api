@@ -68,7 +68,7 @@ export class SubCategoryService implements subCategoryQuery {
     return subCategorycategory;
   };
 
-  public findAll = async (id?: string) => {
+  public findAll = async (id?: string, queryObj?: any) => {
     if (id) {
       const exists = await this.categoryQuery.existsById(id);
       if (!exists) {
@@ -78,7 +78,7 @@ export class SubCategoryService implements subCategoryQuery {
         );
       }
     }
-    const subCategories = await this.repository.findAll(id);
+    const subCategories = await this.repository.findAll(id, queryObj);
     return subCategories;
   };
 }

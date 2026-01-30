@@ -6,7 +6,7 @@ import {
   updateBrandDto,
 } from "../../dto/brandDto/brandRequestDto";
 export interface BrandRepository {
-  findAll(): Promise<Array<brandDocument>>;
+  findAll(queryObj?: any): Promise<Array<brandDocument>>;
   findOne(id: string): Promise<brandDocument | null>;
   createOne(data: createBrandDto): Promise<brandDocument>;
   deleteOne(id: string): Promise<any>;
