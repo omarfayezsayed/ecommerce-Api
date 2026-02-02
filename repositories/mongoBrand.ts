@@ -22,32 +22,25 @@ export class MongoBrandRepository implements BrandRepository {
     return await query;
   };
 
-  public findOne = async (id: string): Promise<brandDocument> => {
+  public findOne = async (id: string): Promise<brandDocument | null> => {
     const brand = await Brand.findById(id);
-    if (!brand) {
-      throw new apiError(`no brand with that id:${id}`, StatusCodes.NOT_FOUND);
-    }
+
     return brand;
   };
   public updateOne = async (
     id: string,
-    data: updateBrandDto
-  ): Promise<brandDocument> => {
+    data: updateBrandDto,
+  ): Promise<brandDocument | null> => {
     const brand = await Brand.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
     });
 
-    if (!brand) {
-      throw new apiError(`no brand with that id:${id}`, StatusCodes.NOT_FOUND);
-    }
     return brand;
   };
   public deleteOne = async (id: string): Promise<any> => {
     const brand = await Brand.findByIdAndDelete(id);
-    if (!brand) {
-      throw new apiError(`no brand with that id :${id}`, StatusCodes.NOT_FOUND);
-    }
+
     return brand;
   };
 }

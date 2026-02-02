@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "../services/category";
 import { toCategoryResponseDto } from "../mappers/categoryMapper";
 import { queryParser } from "../utils/queryParser";
+import { CategorInternalDto } from "../dto/categoryDto/categoryInternalDto";
 
 export class CategoryController {
   private categoryService: CategoryService;
@@ -11,7 +12,9 @@ export class CategoryController {
     this.categoryService = categoryService;
   }
   public createCategory = asyncWrapper(async (req: Request, res: Response) => {
-    const category = await this.categoryService.createOne(req.body);
+    const categoryData: CategorInternalDto = req.body;
+    categoryData.file = req.file;
+    const category = await this.categoryService.createOne(categoryData);
     res.status(StatusCodes.CREATED).json({
       status: "success",
       data: toCategoryResponseDto(category),
@@ -23,14 +26,14 @@ export class CategoryController {
       const parsedQuery = queryParser(req.query);
       const categories = await this.categoryService.findAll(parsedQuery);
       const resCatogries = categories.map((cateory) =>
-        toCategoryResponseDto(cateory)
+        toCategoryResponseDto(cateory),
       );
       res.status(StatusCodes.OK).json({
         staus: "success",
         records: resCatogries.length,
         data: resCatogries,
       });
-    }
+    },
   );
 
   public getCategory = asyncWrapper(
@@ -42,7 +45,7 @@ export class CategoryController {
         staus: "success",
         data: toCategoryResponseDto(category),
       });
-    }
+    },
   );
 
   public deleteCategory = asyncWrapper(
@@ -52,19 +55,21 @@ export class CategoryController {
       res.status(StatusCodes.NO_CONTENT).json({
         status: "success",
       });
-    }
+    },
   );
 
   public updateCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
+      const categoryData: CategorInternalDto = req.body;
+      categoryData.file = req.file;
       const category = await this.categoryService.updateOne(
         req.params.id,
-        req.body
+        categoryData,
       );
       res.status(StatusCodes.OK).json({
         status: "success",
         data: toCategoryResponseDto(category),
       });
-    }
+    },
   );
 }

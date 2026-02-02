@@ -1,5 +1,6 @@
-import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import express, { NextFunction, Request, Response, urlencoded } from "express";
 import morgan from "morgan";
 import { connect } from "./config/dbConnection";
 import { categoryRouter } from "./routes/category";
@@ -7,11 +8,12 @@ import { subCategoryRouter } from "./routes/subCategory";
 import { brandRouter } from "./routes/brand";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
 import "reflect-metadata";
+import multer from "multer";
 
-dotenv.config();
 import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
+
 const app = express();
 
 connect();
@@ -20,8 +22,10 @@ if (process.env.ENV_VARIABLE == "development") {
   app.use(morgan("dev"));
 }
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // forms
 
 // Routes
+
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);

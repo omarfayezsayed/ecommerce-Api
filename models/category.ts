@@ -1,14 +1,15 @@
 // import uniqueValidator from "mongoose-unique-validator";
 import mongoose, { Document } from "mongoose";
 
-export interface category {
+export interface Icategory {
   name: string;
-  slug: string;
+  slug?: string;
   image?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  blobName?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
-export interface categoryDocumnet extends category, Document {}
+export interface categoryDocumnet extends Icategory, Document {}
 
 export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
   {
@@ -23,6 +24,7 @@ export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
       type: String,
       lowercase: true,
     },
+    blobName: String,
     image: {
       type: String,
       unique: true,
@@ -30,7 +32,7 @@ export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // CategorySchema.plugin(uniqueValidator, {
@@ -38,5 +40,5 @@ export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
 // });
 export const Category = mongoose.model<categoryDocumnet>(
   "Category",
-  CategorySchema
+  CategorySchema,
 );

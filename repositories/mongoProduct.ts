@@ -11,13 +11,13 @@ export class MongoProductRepository implements ProductRepository {
   constructor() {}
 
   public createOne = async (
-    data: createProductDto
+    data: createProductDto,
   ): Promise<productDocumnet> => {
     return await Product.create(data);
   };
   public findAll = async (
     id?: string,
-    queryObj?: any
+    queryObj?: any,
   ): Promise<Array<productDocumnet>> => {
     let brandId = {};
     if (id) {
@@ -33,44 +33,28 @@ export class MongoProductRepository implements ProductRepository {
     return await query;
   };
 
-  public findOne = async (id: string): Promise<productDocumnet> => {
+  public findOne = async (id: string): Promise<productDocumnet | null> => {
     const product = await Product.findById(id)
       .populate("category")
       .populate("brand")
       .populate({ path: "subCategory" });
-    if (!product) {
-      throw new apiError(
-        `no product with that id:${id}`,
-        StatusCodes.NOT_FOUND
-      );
-    }
+
     return product;
   };
   public updateOne = async (
     id: string,
-    data: updateProductDto
-  ): Promise<productDocumnet> => {
+    data: updateProductDto,
+  ): Promise<productDocumnet | null> => {
     const product = await Product.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
     });
 
-    if (!product) {
-      throw new apiError(
-        `no product with that id:${id}`,
-        StatusCodes.NOT_FOUND
-      );
-    }
     return product;
   };
   public deleteOne = async (id: string): Promise<any> => {
     const product = await Product.findByIdAndDelete(id);
-    if (!product) {
-      throw new apiError(
-        `no product with that id :${id}`,
-        StatusCodes.NOT_FOUND
-      );
-    }
+
     return product;
   };
 }

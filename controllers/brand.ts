@@ -4,6 +4,7 @@ import { Request, RequestHandler, Response } from "express";
 import { BrandService } from "../services/brand";
 import { toBrandResponseDto } from "../mappers/brandMapper";
 import { queryParser } from "../utils/queryParser";
+import { BrandInternalDto } from "../dto/brandDto/brandInternalDto";
 // import { updateOne } from "../utils/controllerFactory";
 export class BrandController {
   private brandService: BrandService;
@@ -22,8 +23,11 @@ export class BrandController {
   });
 
   public createBrand = asyncWrapper(async (req: Request, res: Response) => {
-    const brand = await this.brandService.createOne(req.body);
-
+    const brandData: BrandInternalDto = req.body;
+    brandData.file = req.file;
+    console.log(brandData);
+    const brand = await this.brandService.createOne(brandData);
+    console.log(brand);
     res.status(StatusCodes.CREATED).json({
       status: "success",
       data: toBrandResponseDto(brand),
@@ -47,7 +51,9 @@ export class BrandController {
   });
 
   public updateBrand = asyncWrapper(async (req: Request, res: Response) => {
-    const brand = await this.brandService.updateOne(req.params.id, req.body);
+    const brandData: BrandInternalDto = req.body;
+    brandData.file = req.file;
+    const brand = await this.brandService.updateOne(req.params.id, brandData);
     res.status(StatusCodes.OK).json({
       status: "success",
       data: toBrandResponseDto(brand),

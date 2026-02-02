@@ -7,7 +7,7 @@ import { ClassConstructor } from "class-transformer";
 
 export function validationHandler<T extends Object>(
   dtoClass: ClassConstructor<T>,
-  properity: "params" | "body" | "query" = "body"
+  properity: "params" | "body" | "query" = "body",
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const RequestData = plainToClass(dtoClass, req[properity], {
@@ -29,7 +29,7 @@ export function validationHandler<T extends Object>(
     });
     const responseValidationMessage = validationMessages.join(", ");
     return next(
-      new apiError(responseValidationMessage, StatusCodes.BAD_REQUEST)
+      new apiError(responseValidationMessage, StatusCodes.BAD_REQUEST),
     );
   };
 }
