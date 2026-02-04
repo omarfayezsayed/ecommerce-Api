@@ -7,6 +7,7 @@ import {
 import { idParamDto } from "../dto/utils/idDto";
 import { validationHandler } from "../middlewares/validationHandler";
 import { productController } from "../composition/product";
+import { upload } from "../middlewares/uploads";
 
 export const productRouter = express.Router({ mergeParams: true });
 
@@ -14,7 +15,11 @@ export const productRouter = express.Router({ mergeParams: true });
 
 productRouter
   .route("/")
-  .post([validationHandler(createProductDto), productController.createProduct])
+  .post([
+    upload.fields([{ name: "imageCover" }, { name: "images" }]),
+    validationHandler(createProductDto),
+    productController.createProduct,
+  ])
   .get(productController.findAllProducts);
 
 productRouter
@@ -25,6 +30,7 @@ productRouter
     productController.deleteProduct,
   ])
   .patch([
+    upload.fields([{ name: "imageCover" }, { name: "images" }]),
     validationHandler(idParamDto, "params"),
     validationHandler(updateProductDto),
     productController.updateProduct,

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "../services/category";
-import { toCategoryResponseDto } from "../mappers/categoryMapper";
+// import { toCategoryResponseDto } from "../mappers/categoryMapper";
 import { queryParser } from "../utils/queryParser";
 import { CategorInternalDto } from "../dto/categoryDto/categoryInternalDto";
 
@@ -17,7 +17,7 @@ export class CategoryController {
     const category = await this.categoryService.createOne(categoryData);
     res.status(StatusCodes.CREATED).json({
       status: "success",
-      data: toCategoryResponseDto(category),
+      data: category,
     });
   });
 
@@ -25,13 +25,11 @@ export class CategoryController {
     async (req: Request, res: Response) => {
       const parsedQuery = queryParser(req.query);
       const categories = await this.categoryService.findAll(parsedQuery);
-      const resCatogries = categories.map((cateory) =>
-        toCategoryResponseDto(cateory),
-      );
+      // const resCatogries = categories.map((cateory) => cateory);
       res.status(StatusCodes.OK).json({
         staus: "success",
-        records: resCatogries.length,
-        data: resCatogries,
+        records: categories.length,
+        data: categories,
       });
     },
   );
@@ -43,7 +41,7 @@ export class CategoryController {
 
       res.status(StatusCodes.OK).json({
         staus: "success",
-        data: toCategoryResponseDto(category),
+        data: category,
       });
     },
   );
@@ -68,7 +66,7 @@ export class CategoryController {
       );
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: toCategoryResponseDto(category),
+        data: category,
       });
     },
   );

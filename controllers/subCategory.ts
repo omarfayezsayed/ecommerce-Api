@@ -3,12 +3,13 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import { StatusCodes } from "http-status-codes";
 import { SubCategoryService } from "../services/subCategory";
 
-import { toSubCategoryResponseDto } from "../mappers/subCategoryMapper";
+// import { toSubCategoryResponseDto } from "../mappers/subCategoryMapper";
 import { queryParser } from "../utils/queryParser";
+import { SubCategoryInternalDto } from "../dto/subCategoryDto/subCategoryInternalDto";
 export const addMainCategoryToReqBody = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (req.params.id) {
     req.body.category = req.params.id;
@@ -23,12 +24,15 @@ export class SubCategoryController {
   }
   public createSubCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const subCategory = await this.subCategoryService.createOne(req.body);
+      const subCategoryData: SubCategoryInternalDto = req.body;
+      if (req.file) subCategoryData.file = req.file;
+      const subCategory =
+        await this.subCategoryService.createOne(subCategoryData);
       res.status(StatusCodes.CREATED).json({
         status: "success",
-        data: toSubCategoryResponseDto(subCategory),
+        data: subCategory,
       });
-    }
+    },
   );
 
   public getAllSubCategories = asyncWrapper(
@@ -36,17 +40,15 @@ export class SubCategoryController {
       const parsedQuery = queryParser(req.query);
       const subCategories = await this.subCategoryService.findAll(
         req.params.id,
-        parsedQuery
+        parsedQuery,
       );
-      const resSubCategories = subCategories.map((subCategory) =>
-        toSubCategoryResponseDto(subCategory)
-      );
+      const resSubCategories = subCategories.map((subCategory) => subCategory);
       res.status(StatusCodes.OK).json({
         status: "success",
         records: resSubCategories.length,
         data: resSubCategories,
       });
-    }
+    },
   );
 
   public getSubCategory = asyncWrapper(
@@ -54,32 +56,34 @@ export class SubCategoryController {
       const subCategory = await this.subCategoryService.findOne(req.params.id);
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: toSubCategoryResponseDto(subCategory),
+        data: subCategory,
       });
-    }
+    },
   );
 
   public updateSubCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
+      const subCategoryData: SubCategoryInternalDto = req.body;
+      if (req.file) subCategoryData.file = req.file;
       const subCategory = await this.subCategoryService.updateOne(
         req.params.id,
-        req.body
+        subCategoryData,
       );
       res.status(StatusCodes.OK).json({
         status: "success",
-        data: toSubCategoryResponseDto(subCategory),
+        data: subCategory,
       });
-    }
+    },
   );
 
   public deleteSubCategory = asyncWrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const subCategory = await this.subCategoryService.deleteOne(
-        req.params.id
+        req.params.id,
       );
       res.status(StatusCodes.NO_CONTENT).json({
         status: "success",
       });
-    }
+    },
   );
 }

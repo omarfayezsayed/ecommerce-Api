@@ -1,14 +1,10 @@
 import { brandDocument, Ibrand } from "../../models/brand";
-import { Types, Query } from "mongoose";
-import { Request } from "express";
-import {
-  createBrandDto,
-  updateBrandDto,
-} from "../../dto/brandDto/brandRequestDto";
+
+import {} from "../../dto/brandDto/brandRequestDto";
 export interface BrandRepository {
   findAll(queryObj?: any): Promise<Array<brandDocument>>;
   findOne(id: string): Promise<brandDocument | null>;
-  createOne(data: Ibrand): Promise<brandDocument>;
   deleteOne(id: string): Promise<any>;
-  updateOne(id: string, data: Ibrand): Promise<brandDocument | null>;
+  createOne(data: Partial<Ibrand>): Promise<brandDocument>;
+  updateOne(id: string, data: Partial<Ibrand>): Promise<brandDocument | null>;
 }

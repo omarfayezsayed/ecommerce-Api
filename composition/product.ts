@@ -16,6 +16,7 @@ import { subCategoryQuery } from "../services/interfaces/subcategory";
 import { BrandService } from "../services/brand";
 import { CategoryService } from "../services/category";
 import { SubCategoryService } from "../services/subCategory";
+import { azureStorageService } from "../services/azureStorage";
 
 // repos
 const mongoProductRepository: ProductRepository = new MongoProductRepository();
@@ -25,20 +26,26 @@ const mongoCategoryRepository: CategoryRepository =
 const mongoSubcategoryRespository: SubCategoryRepository =
   new MongoSubCategoryRepository();
 
-const brandService: BrandQuery = new BrandService(mongoBrandRepository);
+const brandService: BrandQuery = new BrandService(
+  mongoBrandRepository,
+  azureStorageService,
+);
 const categoryService: CategoryQuery = new CategoryService(
-  mongoCategoryRepository
+  mongoCategoryRepository,
+  azureStorageService,
 );
 
 const subCategoryService: subCategoryQuery = new SubCategoryService(
   mongoSubcategoryRespository,
-  categoryService
+  categoryService,
+  azureStorageService,
 );
 
 const productService = new ProductService(
   mongoProductRepository,
   brandService,
   categoryService,
-  subCategoryService
+  subCategoryService,
+  azureStorageService,
 );
 export const productController = new ProductController(productService);

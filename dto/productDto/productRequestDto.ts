@@ -9,7 +9,8 @@ import {
   Min,
   IsArray,
 } from "class-validator";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
+// import "reflect-metadata";
 export class createProductDto {
   @Expose()
   @IsString()
@@ -23,6 +24,7 @@ export class createProductDto {
   slug!: string;
 
   @Expose()
+  @Type(() => Number)
   @IsNumber()
   @Min(1, { message: "quantity must be at least one" })
   quantity!: number;
@@ -30,9 +32,11 @@ export class createProductDto {
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   sold!: number;
 
   @Expose()
+  @Type(() => Number)
   @IsNumber()
   price!: number;
 
@@ -61,33 +65,36 @@ export class createProductDto {
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   priceAfterDiscount!: number;
 
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   ratingsAverage!: number;
 
   @Expose()
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   ratingsQuantity!: number;
 
-  @Expose()
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  image!: [string];
+  // @Expose()
+  // @IsArray()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // image!: [string];
 
   @Expose()
-  @IsString()
+  @IsArray()
   @IsOptional()
   @IsNotEmpty()
   colors!: [string];
 
-  @Expose()
-  @IsString()
-  imageCover!: string;
+  // @Expose()
+  // @IsString()
+  // imageCover!: string;
 }
 
 export class updateProductDto {

@@ -5,16 +5,18 @@ import { MongoSubCategoryRepository } from "../repositories/mongoSubCategory";
 import { CategoryService } from "../services/category";
 import { CategoryQuery } from "../services/interfaces/category";
 import { SubCategoryService } from "../services/subCategory";
-
+import { azureStorageService } from "../services/azureStorage";
 const mongoSubcategoryRespository: SubCategoryRepository =
   new MongoSubCategoryRepository();
 const categoryQuerySerivce: CategoryQuery = new CategoryService(
-  new MongoCategoryRepository()
+  new MongoCategoryRepository(),
+  azureStorageService,
 );
 const subCategoryService = new SubCategoryService(
   mongoSubcategoryRespository,
-  categoryQuerySerivce
+  categoryQuerySerivce,
+  azureStorageService,
 );
 export const subCategoryController = new SubCategoryController(
-  subCategoryService
+  subCategoryService,
 );

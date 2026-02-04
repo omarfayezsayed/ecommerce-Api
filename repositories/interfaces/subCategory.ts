@@ -1,16 +1,12 @@
-import { subCategoryDocument } from "../../models/subCategory";
-import {
-  createSubCategoryDto,
-  updateSubCategoryDto,
-} from "../../dto/subCategoryDto/subCategoryRequestDto";
+import { IsubCategory, subCategoryDocument } from "../../models/subCategory";
 
 export interface SubCategoryRepository {
-  createOne(data: createSubCategoryDto): Promise<subCategoryDocument>;
+  createOne(data: Partial<IsubCategory>): Promise<subCategoryDocument>;
   findAll(id?: string, queryObj?: any): Promise<Array<subCategoryDocument>>;
   findOne(id: string): Promise<subCategoryDocument | null>;
   updateOne(
     id: string,
-    data: updateSubCategoryDto
+    data: Partial<IsubCategory>,
   ): Promise<subCategoryDocument | null>;
   deleteOne(id: string): Promise<any>;
 }

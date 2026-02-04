@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { BrandQuery } from "./interfaces/brand";
 import { BrandInternalDto } from "../dto/brandDto/brandInternalDto";
 import { AzureStorageService } from "./azureStorage";
+import { StorageFolder } from "../utils/storageFolder";
 export class BrandService implements BrandQuery {
   private repository: BrandRepository;
   private azureStorageService: AzureStorageService;
@@ -40,11 +41,14 @@ export class BrandService implements BrandQuery {
   };
   updateOne = async (id: string, data: BrandInternalDto) => {
     let blobName: string = "";
-    if (typeof data.file != "undefined") {
+    if (data.file) {
       const image = await this.uploadImage(data.file);
       data.blobName = image.blobName;
       data.image = image.imageUrl;
       blobName = image.blobName;
+    }
+    if (data.name) {
+      data.slug = slugify(data.name!);
     }
     const brandData = this.mapToIBrand(data);
     Object.keys(brandData).forEach(
@@ -74,10 +78,13 @@ export class BrandService implements BrandQuery {
     return brands;
   };
   private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(file);
+    const res = await this.azureStorageService.uploadImage(
+      file,
+      StorageFolder.BRANDS,
+    );
     return res;
   };
-  private mapToIBrand(data: BrandInternalDto): Ibrand {
+  private mapToIBrand(data: BrandInternalDto): Partial<Ibrand> {
     return {
       name: data.name,
       slug: data.slug,

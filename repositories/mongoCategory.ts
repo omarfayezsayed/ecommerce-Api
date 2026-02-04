@@ -10,7 +10,7 @@ export class MongoCategoryRepository implements CategoryRepository {
   constructor() {}
 
   public createOne = async (
-    categoryData: createCategoryDto
+    categoryData: createCategoryDto,
   ): Promise<categoryDocumnet> => {
     return await Category.create(categoryData);
   };
@@ -29,7 +29,7 @@ export class MongoCategoryRepository implements CategoryRepository {
   };
   public updateOne = async (
     id: String,
-    categoryData: updateCategoryDto
+    categoryData: updateCategoryDto,
   ): Promise<categoryDocumnet | null> => {
     console.log(categoryData, id, "here");
     const category = await Category.findByIdAndUpdate(id, categoryData, {

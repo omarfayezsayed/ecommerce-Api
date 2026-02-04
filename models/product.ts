@@ -1,29 +1,30 @@
 // import uniqueValidator from "mongoose-unique-validator";
 import mongoose, { Document } from "mongoose";
-import { categoryDocumnet } from "./category";
-import { subCategoryDocument } from "./subCategory";
-import { brandDocument } from "./brand";
+import { categoryDocumnet, Icategory } from "./category";
+import { IsubCategory, subCategoryDocument } from "./subCategory";
+import { brandDocument, Ibrand } from "./brand";
 
-export interface product {
-  title: string;
-  slug: string;
-  quantity: number;
-  sold: number;
-  price: number;
-  description: string;
-  category: categoryDocumnet | mongoose.Types.ObjectId;
-  subCategory?: subCategoryDocument | mongoose.Types.ObjectId;
-  brand?: brandDocument | mongoose.Types.ObjectId;
+export interface Iproduct {
+  id?: string;
+  title?: string;
+  slug?: string;
+  quantity?: number;
+  sold?: number;
+  price?: number;
+  description?: string;
+  category?: Icategory | string;
+  subCategory?: IsubCategory | string;
+  brand?: Ibrand | string;
   priceAfterDiscount?: number;
   ratingsAverage?: number;
   ratingsQuantity?: number;
-  images?: [string];
-  imageCover: string;
-  colors?: [string];
-  createdAt: Date;
-  updatedAt: Date;
+  images?: string[];
+  imageCover?: string;
+  colors?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
-export interface productDocumnet extends product, Document {}
+export interface productDocumnet extends Iproduct {}
 
 export const ProductSchema = new mongoose.Schema<productDocumnet>(
   {
@@ -88,7 +89,7 @@ export const ProductSchema = new mongoose.Schema<productDocumnet>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ProductSchema.plugin(uniqueValidator, {
@@ -96,7 +97,7 @@ export const ProductSchema = new mongoose.Schema<productDocumnet>(
 // });
 export const Product = mongoose.model<productDocumnet>(
   "Product",
-  ProductSchema
+  ProductSchema,
 );
 
 //     "title": "White Gold Plated Princess",

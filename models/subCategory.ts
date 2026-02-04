@@ -1,17 +1,26 @@
 import uniqueValidator from "mongoose-unique-validator";
-import mongoose, { Schema, Types, Document, Query } from "mongoose";
+import mongoose, {
+  Schema,
+  Types,
+  Document,
+  Query,
+  PopulatedDoc,
+} from "mongoose";
 
-import { category, categoryDocumnet } from "./category";
+import { categoryDocumnet, Icategory } from "./category";
 
-export interface subCategory {
+export interface IsubCategory {
+  id: string;
   name: string;
   slug: string;
   image?: string;
-  category: categoryDocumnet | Types.ObjectId;
+  category: Icategory | string;
+  blobName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
-export interface subCategoryDocument extends subCategory, Document {}
+
+export interface subCategoryDocument extends IsubCategory {}
 const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
   {
     name: {
@@ -41,10 +50,11 @@ const subCategorySchema = new mongoose.Schema<subCategoryDocument>(
       },
       required: [true, "SubCategory must have main category"],
     },
+    blobName: String,
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 subCategorySchema.pre<subCategoryDocument>(/^find/, function (next) {
@@ -56,5 +66,5 @@ subCategorySchema.pre<subCategoryDocument>(/^find/, function (next) {
 
 export const Subcategory = mongoose.model<subCategoryDocument>(
   "SubCategory",
-  subCategorySchema
+  subCategorySchema,
 );

@@ -10,6 +10,7 @@ import { StatusCodes } from "http-status-codes";
 import { CategoryQuery } from "./interfaces/category";
 import { CategorInternalDto } from "../dto/categoryDto/categoryInternalDto";
 import { AzureStorageService } from "./azureStorage";
+import { StorageFolder } from "../utils/storageFolder";
 export class CategoryService implements CategoryQuery {
   private repository: CategoryRepository;
   private azureStorageService: AzureStorageService;
@@ -34,6 +35,7 @@ export class CategoryService implements CategoryQuery {
       data.blobName = image.blobName;
       data.image = image.imageUrl;
     }
+    data.slug = slugify(data.name!);
 
     const category = await this.repository.createOne(this.mapToICategory(data));
     return category;
@@ -57,6 +59,7 @@ export class CategoryService implements CategoryQuery {
       data.image = image.imageUrl;
       blobName = image.blobName;
     }
+    if (data.name) data.slug = slugify(data.name!);
     const categoryData = this.mapToICategory(data);
     Object.keys(categoryData).forEach(
       (key) =>
@@ -90,10 +93,13 @@ export class CategoryService implements CategoryQuery {
     return categories;
   };
   private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(file);
+    const res = await this.azureStorageService.uploadImage(
+      file,
+      StorageFolder.CATEGORIES,
+    );
     return res;
   };
-  private mapToICategory(data: CategorInternalDto): Icategory {
+  private mapToICategory(data: CategorInternalDto): Partial<Icategory> {
     return {
       name: data.name,
       slug: data.slug,

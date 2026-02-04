@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import "reflect-metadata";
 import express, { NextFunction, Request, Response, urlencoded } from "express";
 import morgan from "morgan";
 import { connect } from "./config/dbConnection";
@@ -7,7 +8,6 @@ import { categoryRouter } from "./routes/category";
 import { subCategoryRouter } from "./routes/subCategory";
 import { brandRouter } from "./routes/brand";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
-import "reflect-metadata";
 import multer from "multer";
 
 import { errorChain } from "./middlewares/errors/handlingChain";

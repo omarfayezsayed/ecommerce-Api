@@ -2,14 +2,15 @@ import mongoose, { Schema, Document } from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
 export interface Ibrand {
   name?: string;
+  id: string;
   slug?: string;
   image?: string;
   blobName?: string;
-  createdAt?: Date;
-  updateAt?: Date;
+  createdAt: Date;
+  updateAt: Date;
 }
 
-export interface brandDocument extends Ibrand, Document {}
+export interface brandDocument extends Ibrand {}
 const brandSchema = new Schema<brandDocument>({
   name: {
     type: String,

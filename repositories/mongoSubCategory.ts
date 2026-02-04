@@ -1,5 +1,9 @@
 import { SubCategoryRepository } from "./interfaces/subCategory";
-import { Subcategory, subCategoryDocument } from "../models/subCategory";
+import {
+  IsubCategory,
+  Subcategory,
+  subCategoryDocument,
+} from "../models/subCategory";
 import {
   createSubCategoryDto,
   updateSubCategoryDto,
@@ -10,15 +14,15 @@ export class MongoSubCategoryRepository implements SubCategoryRepository {
   constructor() {}
 
   public createOne = async (
-    data: createSubCategoryDto
+    data: IsubCategory,
   ): Promise<subCategoryDocument> => {
     const subcategory: subCategoryDocument = await Subcategory.create(data);
-    console.log(typeof subcategory.category, "herer");
+
     return subcategory;
   };
   public findAll = async (
     id?: string,
-    queryObj?: any
+    queryObj?: any,
   ): Promise<Array<subCategoryDocument>> => {
     let categorytId = {};
     if (id) {
@@ -38,7 +42,7 @@ export class MongoSubCategoryRepository implements SubCategoryRepository {
   };
   public updateOne = async (
     id: String,
-    data: updateSubCategoryDto
+    data: IsubCategory,
   ): Promise<subCategoryDocument | null> => {
     const subCategory = await Subcategory.findByIdAndUpdate(id, data, {
       new: true,

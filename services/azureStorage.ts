@@ -1,4 +1,5 @@
 import { ContainerClient } from "@azure/storage-blob";
+import { StorageFolder } from "../utils/storageFolder";
 // dotenv.config();
 
 export class AzureStorageService {
@@ -17,9 +18,10 @@ export class AzureStorageService {
 
   async uploadImage(
     file: Express.Multer.File,
+    folder: StorageFolder,
   ): Promise<{ imageUrl: string; blobName: string }> {
     try {
-      const blobName = `${Date.now()}-${file.originalname}`;
+      const blobName = `${folder}/${Date.now()}-${file.originalname}`;
       const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
 
       await blockBlobClient.uploadData(file.buffer, {

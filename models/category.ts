@@ -1,15 +1,16 @@
 // import uniqueValidator from "mongoose-unique-validator";
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 
 export interface Icategory {
-  name: string;
+  name?: string;
+  id?: string;
   slug?: string;
   image?: string;
   blobName?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
-export interface categoryDocumnet extends Icategory, Document {}
+export interface categoryDocumnet extends Icategory {}
 
 export const CategorySchema = new mongoose.Schema<categoryDocumnet>(
   {

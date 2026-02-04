@@ -1,6 +1,5 @@
-import { productDocumnet } from "../../models/product";
-import { Types, Query } from "mongoose";
-import { Request } from "express";
+import { Iproduct, productDocumnet } from "../../models/product";
+
 import {
   updateProductDto,
   createProductDto,
@@ -8,10 +7,10 @@ import {
 export interface ProductRepository {
   findAll(id?: string, queryObj?: any): Promise<Array<productDocumnet>>;
   findOne(id: string): Promise<productDocumnet | null>;
-  createOne(data: createProductDto): Promise<productDocumnet>;
+  createOne(data: Partial<Iproduct>): Promise<productDocumnet>;
   deleteOne(id: string): Promise<any>;
   updateOne(
     id: string,
-    data: updateProductDto
+    data: Partial<Iproduct>,
   ): Promise<productDocumnet | null>;
 }
