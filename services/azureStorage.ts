@@ -12,7 +12,7 @@ export class AzureStorageService {
     if (!containerSasUrl) {
       throw new Error("Azure SAS URL is missing in environment variables");
     }
-
+    console.log(containerSasUrl);
     this.containerClient = new ContainerClient(containerSasUrl);
   }
 
@@ -23,13 +23,15 @@ export class AzureStorageService {
     try {
       const blobName = `${folder}/${Date.now()}-${file.originalname}`;
       const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
-
+      console.log("File size:", file.buffer.length / 1024, "KB");
+      console.log("Container URL:", this.containerClient.url);
+      console.time("upload");
       await blockBlobClient.uploadData(file.buffer, {
         blobHTTPHeaders: {
           blobContentType: file.mimetype,
         },
       });
-
+      console.timeEnd("upload");
       console.log("Upload successful:", blockBlobClient.url);
 
       return {

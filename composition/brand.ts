@@ -1,10 +1,11 @@
 import { BrandController } from "../controllers/brand";
 import { MongoBrandRepository } from "../repositories/mongoBrand";
 import { BrandService } from "../services/brand";
-import { azureStorageService } from "../services/azureStorage";
+import { imageService } from "./imageProcessor";
 const mongoBrandRepository = new MongoBrandRepository();
-const brandService = new BrandService(
+
+export const brandService = new BrandService(
   mongoBrandRepository,
-  azureStorageService,
+  imageService,
 );
 export const brandController = new BrandController(brandService);

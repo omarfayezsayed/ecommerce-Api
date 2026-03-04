@@ -30,18 +30,7 @@ export class ProductController {
 
   public createProduct = asyncWrapper(async (req: Request, res: Response) => {
     // console.log(req.files, "fillles");
-    const productData: InteralProductDto = req.body;
-    if (req.files) {
-      productData.images = [];
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      if (files.imageCover.length) {
-        productData.file = files.imageCover[0];
-      }
-      if (files.images.length) {
-        productData.files = files.images;
-      }
-    }
-    console.log(productData, "dataaa");
+    const productData = this.setProductData(req);
     const product = await this.productService.createOne(productData);
     res.status(StatusCodes.CREATED).json({
       status: "success",
@@ -66,15 +55,32 @@ export class ProductController {
   });
 
   public updateProduct = asyncWrapper(async (req: Request, res: Response) => {
+    const productData = this.setProductData(req);
+    console.log(productData);
     const product = await this.productService.updateOne(
       req.params.id,
-      req.body,
+      productData,
     );
     res.status(StatusCodes.OK).json({
       status: "success",
       data: product,
     });
   });
+
+  private setProductData = (req: Request) => {
+    const productData: InteralProductDto = req.body;
+    if (req.files) {
+      productData.images = [];
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      if (files.imageCover?.length) {
+        productData.file = files.imageCover[0];
+      }
+      if (files.images?.length) {
+        productData.files = files.images;
+      }
+    }
+    return productData;
+  };
 }
 
 // {

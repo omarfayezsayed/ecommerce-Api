@@ -10,7 +10,7 @@ import {
   IsArray,
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
-// import "reflect-metadata";
+
 export class createProductDto {
   @Expose()
   @IsString()
@@ -112,6 +112,7 @@ export class updateProductDto {
 
   @Expose()
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   @Min(1, { message: "quantity must be at least one" })
   quantity!: number;
@@ -119,11 +120,13 @@ export class updateProductDto {
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   sold!: number;
 
   @Expose()
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   price!: number;
 
   @Expose()
@@ -155,16 +158,19 @@ export class updateProductDto {
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   priceAfterDiscount!: number;
 
   @Expose()
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   ratingsAverage!: number;
 
   @Expose()
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   ratingsQuantity!: number;
 
   @Expose()

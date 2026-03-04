@@ -16,53 +16,36 @@ import { subCategoryDocument } from "../models/subCategory";
 import { InteralProductDto } from "../dto/productDto/productInternalDto";
 import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
+import { ImageProcessingService } from "./imageProcessing";
+import { ImageService } from "./imageService";
 export class ProductService {
   private repository: ProductRepository;
   private brandQuery: BrandQuery;
   private categoryQuery: CategoryQuery;
   private subCategoryQuery: subCategoryQuery;
-  private azureStorageService: AzureStorageService;
-
+  private imageService: ImageService;
   constructor(
     repo: ProductRepository,
     brandQuery: BrandQuery,
     categoryQuery: CategoryQuery,
     subCategoryQuery: subCategoryQuery,
-    azureStorageService: AzureStorageService,
+    imageService: ImageService,
   ) {
     this.repository = repo;
     this.brandQuery = brandQuery;
     this.categoryQuery = categoryQuery;
     this.subCategoryQuery = subCategoryQuery;
-    this.azureStorageService = azureStorageService;
+    this.imageService = imageService;
   }
 
   public createOne = async (
     data: InteralProductDto,
   ): Promise<productDocumnet> => {
     await this.categoryBrandSubcateoryCheck(data);
-    data.slug = slugify(data.title!);
-    const uploadPromises: Promise<{ imageUrl: string; blobName: string }>[] =
-      [];
-    if (data.file) {
-      const image = await this.azureStorageService.uploadImage(
-        data.file,
-        StorageFolder.PRODUCTS,
-      );
-      data.imageCover = image.blobName;
-    }
-    if (data.files) {
-      data.files.forEach((image) => {
-        uploadPromises.push(
-          this.azureStorageService.uploadImage(image, StorageFolder.PRODUCTS),
-        );
-      });
-    }
-    const images = await Promise.all(uploadPromises);
-    images.forEach((image) => {
-      data.images?.push(image.blobName);
-    });
-    const product = await this.repository.createOne(this.mapToIProduct(data));
+    const processedData = await this.processImageData(data);
+    const product = await this.repository.createOne(
+      this.mapToIProduct(processedData),
+    );
     return product;
   };
 
@@ -78,7 +61,8 @@ export class ProductService {
   };
   updateOne = async (id: string, data: InteralProductDto) => {
     await this.categoryBrandSubcateoryCheck(data!);
-    const productData = this.mapToIProduct(data);
+    const processedData = await this.processImageData(data);
+    const productData = this.mapToIProduct(processedData);
     Object.keys(productData).forEach(
       (key) =>
         (productData as any)[key] === undefined &&
@@ -107,6 +91,35 @@ export class ProductService {
   public findAll = async (id?: string, queryObj?: object) => {
     const products = await this.repository.findAll(id, queryObj);
     return products;
+  };
+  private processImageData = async (data: InteralProductDto) => {
+    if (data.title) data.slug = slugify(data.title);
+
+    const uploadPromises: Promise<{ imageUrl: string; blobName: string }>[] =
+      [];
+
+    if (data.file) {
+      uploadPromises.push(
+        this.imageService.uploadFromDto(data.file, StorageFolder.PRODUCTS),
+      );
+    }
+
+    if (data.files) {
+      data.files.forEach((file) => {
+        uploadPromises.push(
+          this.imageService.uploadFromDto(file, StorageFolder.PRODUCTS),
+        );
+      });
+    }
+
+    const [coverImage, ...otherImages] = await Promise.all(uploadPromises);
+
+    if (coverImage) data.imageCover = coverImage.blobName;
+    if (otherImages.length) {
+      otherImages.forEach((image) => data.images?.push(image.blobName));
+    }
+
+    return data;
   };
 
   private categoryBrandSubcateoryCheck = async (
@@ -150,13 +163,7 @@ export class ProductService {
       }
     }
   };
-  private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(
-      file,
-      StorageFolder.CATEGORIES,
-    );
-    return res;
-  };
+
   private mapToIProduct(data: InteralProductDto): Partial<Iproduct> {
     return {
       title: data.title,

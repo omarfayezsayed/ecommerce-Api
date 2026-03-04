@@ -9,18 +9,20 @@ import { subCategoryQuery } from "./interfaces/subcategory";
 import { SubCategoryInternalDto } from "../dto/subCategoryDto/subCategoryInternalDto";
 import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
+import { ImageProcessingService } from "./imageProcessing";
+import { ImageService } from "../services/imageService";
 export class SubCategoryService implements subCategoryQuery {
   private repository: SubCategoryRepository;
   private categoryQuery: CategoryQuery;
-  private azureStorageService: AzureStorageService;
+  private imageService: ImageService;
   constructor(
     repo: SubCategoryRepository,
     categoryQuery: CategoryQuery,
-    azureStorageService: AzureStorageService,
+    imageService: ImageService,
   ) {
     this.repository = repo;
     this.categoryQuery = categoryQuery;
-    this.azureStorageService = azureStorageService;
+    this.imageService = imageService;
   }
   public existsById = async (
     id: string,
@@ -39,11 +41,11 @@ export class SubCategoryService implements subCategoryQuery {
         StatusCodes.NOT_FOUND,
       );
     }
-    if (data.file) {
-      const image = await this.uploadImage(data.file);
-      data.image = image.imageUrl;
-      data.blobName = image.blobName;
-    }
+    if (data.file)
+      await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.SUBCATEGORIES,
+      );
     const subCategory = await this.repository.createOne(
       this.mapToISubCategory(data),
     );
@@ -71,11 +73,11 @@ export class SubCategoryService implements subCategoryQuery {
         );
       }
     }
-    if (data.file) {
-      const image = await this.uploadImage(data.file);
-      data.image = image.imageUrl;
-      data.blobName = image.blobName;
-    }
+    if (data.file)
+      await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.SUBCATEGORIES,
+      );
     if (data.name) data.slug = slugify(data.name);
     const subCategoryData = this.mapToISubCategory(data);
     Object.keys(subCategoryData).forEach(
@@ -130,11 +132,4 @@ export class SubCategoryService implements subCategoryQuery {
       blobName: data.blobName,
     };
   }
-  private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(
-      file,
-      StorageFolder.SUBCATEGORIES,
-    );
-    return res;
-  };
 }

@@ -28,6 +28,7 @@ export class InteralProductDto {
   colors?: string[];
 
   imageCover?: string;
+  blobName?: string;
   file?: Express.Multer.File;
   files?: Express.Multer.File[];
 }

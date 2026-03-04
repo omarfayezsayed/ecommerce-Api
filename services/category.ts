@@ -11,16 +11,14 @@ import { CategoryQuery } from "./interfaces/category";
 import { CategorInternalDto } from "../dto/categoryDto/categoryInternalDto";
 import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
+import { ImageProcessingService } from "./imageProcessing";
+import { ImageService } from "./imageService";
 export class CategoryService implements CategoryQuery {
   private repository: CategoryRepository;
-  private azureStorageService: AzureStorageService;
-
-  constructor(
-    repo: CategoryRepository,
-    azureStorageService: AzureStorageService,
-  ) {
+  private imageService: ImageService;
+  constructor(repo: CategoryRepository, imageService: ImageService) {
     this.repository = repo;
-    this.azureStorageService = azureStorageService;
+    this.imageService = imageService;
   }
   public existsById = async (id: string): Promise<boolean> => {
     const exists = await this.repository.findOne(id);
@@ -30,11 +28,11 @@ export class CategoryService implements CategoryQuery {
   public createOne = async (
     data: CategorInternalDto,
   ): Promise<categoryDocumnet> => {
-    if (data.file) {
-      const image = await this.uploadImage(data.file);
-      data.blobName = image.blobName;
-      data.image = image.imageUrl;
-    }
+    if (data.file)
+      await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.CATEGORIES,
+      );
     data.slug = slugify(data.name!);
 
     const category = await this.repository.createOne(this.mapToICategory(data));
@@ -52,12 +50,13 @@ export class CategoryService implements CategoryQuery {
     return category;
   };
   updateOne = async (id: string, data: CategorInternalDto) => {
-    let blobName = "";
+    let blobName: string | undefined = "";
     if (data.file) {
-      const image = await this.uploadImage(data.file);
-      data.blobName = image.blobName;
-      data.image = image.imageUrl;
-      blobName = image.blobName;
+      await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.CATEGORIES,
+      );
+      blobName = data.blobName;
     }
     if (data.name) data.slug = slugify(data.name!);
     const categoryData = this.mapToICategory(data);
@@ -69,7 +68,7 @@ export class CategoryService implements CategoryQuery {
 
     const category = await this.repository.updateOne(id, categoryData);
     if (!category) {
-      if (blobName.length) await this.azureStorageService.deleteImage(blobName);
+      if (blobName?.length) await this.imageService.deleteByBlobName(blobName);
       throw new apiError(
         `no category with that id:${id}`,
         StatusCodes.NOT_FOUND,
@@ -92,13 +91,7 @@ export class CategoryService implements CategoryQuery {
     const categories = await this.repository.findAll(queryObj);
     return categories;
   };
-  private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(
-      file,
-      StorageFolder.CATEGORIES,
-    );
-    return res;
-  };
+
   private mapToICategory(data: CategorInternalDto): Partial<Icategory> {
     return {
       name: data.name,

@@ -8,12 +8,15 @@ import { BrandQuery } from "./interfaces/brand";
 import { BrandInternalDto } from "../dto/brandDto/brandInternalDto";
 import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
+import { ImageProcessingService } from "./imageProcessing";
+import { ImageService } from "./imageService";
 export class BrandService implements BrandQuery {
   private repository: BrandRepository;
-  private azureStorageService: AzureStorageService;
-  constructor(repo: BrandRepository, azureStorageService: AzureStorageService) {
+  private imageService: ImageService;
+
+  constructor(repo: BrandRepository, imageService: ImageService) {
     this.repository = repo;
-    this.azureStorageService = azureStorageService;
+    this.imageService = imageService;
   }
   public existsById = async (id: string): Promise<boolean> => {
     const exists = await this.repository.findOne(id);
@@ -21,13 +24,8 @@ export class BrandService implements BrandQuery {
   };
   public createOne = async (data: BrandInternalDto): Promise<brandDocument> => {
     data.slug = slugify(data.name);
-    console.log(BrandInternalDto, "internal");
-    if (typeof data.file != "undefined") {
-      const image = await this.uploadImage(data.file);
-      data.blobName = image.blobName;
-      data.image = image.imageUrl;
-    }
-
+    if (data.file)
+      await this.imageService.uploadFromDto(data.file, StorageFolder.BRANDS);
     const brand = await this.repository.createOne(this.mapToIBrand(data));
     return brand;
   };
@@ -40,13 +38,12 @@ export class BrandService implements BrandQuery {
     return brand;
   };
   updateOne = async (id: string, data: BrandInternalDto) => {
-    let blobName: string = "";
+    let blobName: string | undefined = "";
     if (data.file) {
-      const image = await this.uploadImage(data.file);
-      data.blobName = image.blobName;
-      data.image = image.imageUrl;
-      blobName = image.blobName;
+      await this.imageService.uploadFromDto(data.file, StorageFolder.BRANDS);
+      blobName = data.blobName;
     }
+
     if (data.name) {
       data.slug = slugify(data.name!);
     }
@@ -55,11 +52,11 @@ export class BrandService implements BrandQuery {
       (key) =>
         (brandData as any)[key] === undefined && delete (brandData as any)[key],
     );
-    console.log("##########");
+
     const brand = await this.repository.updateOne(id, brandData);
     if (!brand) {
-      if (blobName.length) {
-        await this.azureStorageService.deleteImage(blobName);
+      if (blobName?.length) {
+        await this.imageService.deleteByBlobName(blobName);
       }
       throw new apiError(`no brand with that id:${id}`, StatusCodes.NOT_FOUND);
     }
@@ -77,13 +74,7 @@ export class BrandService implements BrandQuery {
     const brands = await this.repository.findAll(queryObj);
     return brands;
   };
-  private uploadImage = async (file: Express.Multer.File) => {
-    const res = await this.azureStorageService.uploadImage(
-      file,
-      StorageFolder.BRANDS,
-    );
-    return res;
-  };
+
   private mapToIBrand(data: BrandInternalDto): Partial<Ibrand> {
     return {
       name: data.name,
