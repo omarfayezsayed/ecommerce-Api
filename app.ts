@@ -2,19 +2,20 @@ import dotenv from "dotenv";
 dotenv.config();
 import "reflect-metadata";
 import express, { NextFunction, Request, Response, urlencoded } from "express";
+const app = express();
 import morgan from "morgan";
 import { connect } from "./config/dbConnection";
 import { categoryRouter } from "./routes/category";
 import { subCategoryRouter } from "./routes/subCategory";
 import { brandRouter } from "./routes/brand";
+import { authRouter } from "./routes/auth";
+import { userRouter } from "./routes/user";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
 import multer from "multer";
 
 import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
-
-const app = express();
 
 connect();
 // middlewares
@@ -28,8 +29,10 @@ app.use(express.urlencoded({ extended: true })); // forms
 
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subCategories", subCategoryRouter);
+app.use("/api/v1/users", userRouter);
 app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/products", productRouter);
+app.use("/api/v1/auth", authRouter);
 app.use("*", handleInvalidRoutes);
 
 // Global error Handler

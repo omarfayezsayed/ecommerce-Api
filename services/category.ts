@@ -28,11 +28,15 @@ export class CategoryService implements CategoryQuery {
   public createOne = async (
     data: CategorInternalDto,
   ): Promise<categoryDocumnet> => {
-    if (data.file)
-      await this.imageService.uploadFromDto(
+    if (data.file) {
+      const uploadedImage = await this.imageService.uploadFromDto(
         data.file,
         StorageFolder.CATEGORIES,
       );
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
+    }
+
     data.slug = slugify(data.name!);
 
     const category = await this.repository.createOne(this.mapToICategory(data));
@@ -52,11 +56,12 @@ export class CategoryService implements CategoryQuery {
   updateOne = async (id: string, data: CategorInternalDto) => {
     let blobName: string | undefined = "";
     if (data.file) {
-      await this.imageService.uploadFromDto(
+      const uploadedImage = await this.imageService.uploadFromDto(
         data.file,
         StorageFolder.CATEGORIES,
       );
-      blobName = data.blobName;
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
     }
     if (data.name) data.slug = slugify(data.name!);
     const categoryData = this.mapToICategory(data);

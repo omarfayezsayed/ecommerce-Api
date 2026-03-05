@@ -59,7 +59,4 @@ export class BrandController {
       data: brand,
     });
   });
-  // public updateBrand = () => {
-  //   return updateOne(this.brandService, toBrandResponseDto);
-  // };
 }

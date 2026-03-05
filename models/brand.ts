@@ -29,6 +29,7 @@ const brandSchema = new Schema<brandDocument>({
   image: {
     type: String,
     unique: true,
+    sparse: true,
   },
 });
 

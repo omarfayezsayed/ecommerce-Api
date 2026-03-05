@@ -41,11 +41,14 @@ export class SubCategoryService implements subCategoryQuery {
         StatusCodes.NOT_FOUND,
       );
     }
-    if (data.file)
-      await this.imageService.uploadFromDto(
+    if (data.file) {
+      const uploadedImage = await this.imageService.uploadFromDto(
         data.file,
         StorageFolder.SUBCATEGORIES,
       );
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
+    }
     const subCategory = await this.repository.createOne(
       this.mapToISubCategory(data),
     );
@@ -73,11 +76,14 @@ export class SubCategoryService implements subCategoryQuery {
         );
       }
     }
-    if (data.file)
-      await this.imageService.uploadFromDto(
+    if (data.file) {
+      const uploadedImage = await this.imageService.uploadFromDto(
         data.file,
         StorageFolder.SUBCATEGORIES,
       );
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
+    }
     if (data.name) data.slug = slugify(data.name);
     const subCategoryData = this.mapToISubCategory(data);
     Object.keys(subCategoryData).forEach(

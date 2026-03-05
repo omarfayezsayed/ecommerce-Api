@@ -3,4 +3,5 @@ export enum StorageFolder {
   BRANDS = "brands",
   CATEGORIES = "categories",
   SUBCATEGORIES = "subcategories",
+  USERS = "users",
 }

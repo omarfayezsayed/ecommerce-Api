@@ -6,9 +6,7 @@ import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
 import { BrandQuery } from "./interfaces/brand";
 import { BrandInternalDto } from "../dto/brandDto/brandInternalDto";
-import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
-import { ImageProcessingService } from "./imageProcessing";
 import { ImageService } from "./imageService";
 export class BrandService implements BrandQuery {
   private repository: BrandRepository;
@@ -24,8 +22,14 @@ export class BrandService implements BrandQuery {
   };
   public createOne = async (data: BrandInternalDto): Promise<brandDocument> => {
     data.slug = slugify(data.name);
-    if (data.file)
-      await this.imageService.uploadFromDto(data.file, StorageFolder.BRANDS);
+    if (data.file) {
+      const uploadedImage = await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.BRANDS,
+      );
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
+    }
     const brand = await this.repository.createOne(this.mapToIBrand(data));
     return brand;
   };
@@ -40,8 +44,12 @@ export class BrandService implements BrandQuery {
   updateOne = async (id: string, data: BrandInternalDto) => {
     let blobName: string | undefined = "";
     if (data.file) {
-      await this.imageService.uploadFromDto(data.file, StorageFolder.BRANDS);
-      blobName = data.blobName;
+      const uploadedImage = await this.imageService.uploadFromDto(
+        data.file,
+        StorageFolder.BRANDS,
+      );
+      data.blobName = uploadedImage.blobName;
+      data.image = uploadedImage.imageUrl;
     }
 
     if (data.name) {

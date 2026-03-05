@@ -1,6 +1,5 @@
 import { brandDocument, Ibrand } from "../../models/brand";
 
-import {} from "../../dto/brandDto/brandRequestDto";
 export interface BrandRepository {
   findAll(queryObj?: any): Promise<Array<brandDocument>>;
   findOne(id: string): Promise<brandDocument | null>;

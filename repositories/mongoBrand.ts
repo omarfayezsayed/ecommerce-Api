@@ -1,6 +1,5 @@
 import { brandDocument, Brand } from "../models/brand";
-import { apiError } from "../utils/apiError";
-import { StatusCodes } from "http-status-codes";
+
 import { BrandRepository } from "./interfaces/brand";
 import {
   createBrandDto,

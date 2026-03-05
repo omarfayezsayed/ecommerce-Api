@@ -1,4 +1,4 @@
-import { plainToClass, plainToInstance } from "class-transformer";
+import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
@@ -10,6 +10,7 @@ export function validationHandler<T extends Object>(
   properity: "params" | "body" | "query" = "body",
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req, "body inside validation");
     const RequestData = plainToClass(dtoClass, req[properity], {
       excludeExtraneousValues: true,
     });
