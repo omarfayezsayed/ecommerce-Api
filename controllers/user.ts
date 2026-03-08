@@ -3,7 +3,7 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import { Request, Response } from "express";
 import { UserService } from "../services/user";
 import { queryParser } from "../utils/queryParser";
-import { UserInternalDto } from "../dto/userDto./userInternalDto";
+import { UserInternalDto } from "../dto/userDto/userInternalDto";
 export class UserController {
   private userService: UserService;
   constructor(userService: UserService) {

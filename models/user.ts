@@ -2,6 +2,7 @@ import mongoose, { Document, Types } from "mongoose";
 import { UserRole } from "../utils/userRoles";
 
 export interface Iuser {
+  id: string;
   name: string;
   slug: string;
   profileImage?: string;
@@ -12,6 +13,9 @@ export interface Iuser {
   isVerfied: boolean;
   role: UserRole;
   blobName: string;
+  authProvider: "local" | "google";
+  refreshToken?: string;
+  refreshTokenExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +38,7 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
     profileImage: {
       type: String,
       unique: true,
+      sparse: true,
     },
     email: {
       type: String,
@@ -56,12 +61,20 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
       required: true,
       default: UserRole.USER,
     },
+    refreshToken: String,
+    refreshTokenExpiresAt: Date,
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+    },
   },
   {
     timestamps: true,
   },
 );
-
+// authProvider?: "local" | "google";
+//   refreshToken?: string;
+//   refreshTokenExpiresAt?: Date;
 // CategorySchema.plugin(uniqueValidator, {
 //   message: "should be unique",
 // });

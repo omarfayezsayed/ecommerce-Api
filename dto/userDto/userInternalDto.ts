@@ -12,4 +12,7 @@ export class UserInternalDto {
   role?: UserRole;
   file?: Express.Multer.File;
   blobName?: string;
+  authProvider?: "local" | "google";
+  refreshToken?: string;
+  refreshTokenExpiresAt?: Date;
 }

@@ -7,8 +7,11 @@ import { StatusCodes } from "http-status-codes";
 import { StorageFolder } from "../utils/storageFolder";
 import { ImageService } from "./imageService";
 import { UserRepository } from "../repositories/interfaces/user";
-import { UserInternalDto } from "../dto/userDto./userInternalDto";
-export class UserService {
+import { UserInternalDto } from "../dto/userDto/userInternalDto";
+import { IAuthUser } from "./interfaces/iAuthUser";
+import { asyncWrapper } from "../utils/asyncWrapper";
+import internal from "stream";
+export class UserService implements IAuthUser {
   private repository: UserRepository;
   private imageService: ImageService;
 
@@ -16,12 +19,39 @@ export class UserService {
     this.repository = repo;
     this.imageService = imageService;
   }
+  public findByEmail = async (email: string): Promise<userDocumnet | null> => {
+    const user = await this.findOneByEmail(email);
+    return user;
+  };
+  public async findById(id: string): Promise<Partial<Iuser> | null> {
+    const user = await this.getOne(id);
+    return user;
+  }
+  createLocalUser(data: UserInternalDto): Promise<userDocumnet> {
+    data.authProvider = "local";
+    return this.createOne(data);
+  }
+  createGoogleUser(data: UserInternalDto): Promise<userDocumnet> {
+    data.authProvider = "google";
+    return this.createOne(data);
+  }
+  async updateRefreshToken(
+    id: string,
+    refreshToken: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await this.updateOne(id, {
+      refreshToken,
+      refreshTokenExpiresAt: expiresAt,
+    });
+  }
   public existsById = async (id: string): Promise<boolean> => {
     const exists = await this.repository.findOneById(id);
     return !!exists;
   };
   public createOne = async (data: UserInternalDto): Promise<userDocumnet> => {
     console.log(data, "data");
+
     data.slug = slugify(data.name!);
     if (data.file) {
       const uploadedImage = await this.imageService.uploadFromDto(
@@ -67,6 +97,7 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(data.password, 10);
       data.password = hashedPassword;
     }
+
     const userData = this.mapToIUsero(data);
     Object.keys(userData).forEach(
       (key) =>
@@ -107,6 +138,9 @@ export class UserService {
       isVerfied: data.isVerfied,
       role: data.role,
       blobName: data.blobName,
+      refreshToken: data.refreshToken,
+      refreshTokenExpiresAt: data.refreshTokenExpiresAt,
+      authProvider: data.authProvider,
     };
   }
 }

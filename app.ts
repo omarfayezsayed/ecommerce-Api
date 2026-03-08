@@ -17,6 +17,8 @@ import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
 
+import passport from "passport";
+// import { passport } from "./routes/auth";
 connect();
 // middlewares
 if (process.env.ENV_VARIABLE == "development") {
@@ -24,7 +26,7 @@ if (process.env.ENV_VARIABLE == "development") {
 }
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // forms
-
+// app.use(passport. in);
 // Routes
 
 app.use("/api/v1/categories", categoryRouter);

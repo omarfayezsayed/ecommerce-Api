@@ -8,7 +8,7 @@ import {
 } from "class-validator";
 import { Expose } from "class-transformer";
 import { UserRole } from "../../utils/userRoles";
-export class signUpUserDto {
+export class registerUserDto {
   @Expose()
   @IsString()
   @Length(3, 20)

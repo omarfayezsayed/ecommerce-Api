@@ -3,7 +3,7 @@ import { userController } from "../composition/user";
 import { upload } from "../middlewares/uploads";
 import { validationHandler } from "../middlewares/validationHandler";
 import { idParamDto } from "../dto/utils/idDto";
-import { signUpUserDto, updateUserDto } from "../dto/userDto./userRequestDto";
+import { registerUserDto, updateUserDto } from "../dto/userDto/userRequestDto";
 
 export const userRouter = express.Router();
 // signUpUserDto
@@ -13,7 +13,7 @@ userRouter
   .route("/")
   .post([
     upload.single("profileImage"),
-    validationHandler(signUpUserDto),
+    validationHandler(registerUserDto),
     userController.createUser,
   ]);
 
