@@ -16,6 +16,7 @@ export interface Iuser {
   authProvider: "local" | "google";
   refreshToken?: string;
   refreshTokenExpiresAt?: Date;
+  passwordChangedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +68,7 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
       type: String,
       enum: ["local", "google"],
     },
+    passwordChangedAt: { type: Date, default: null },
   },
   {
     timestamps: true,

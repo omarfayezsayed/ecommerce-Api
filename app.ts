@@ -41,7 +41,7 @@ app.use("*", handleInvalidRoutes);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof apiError) console.log("trueee");
   console.log(err.name, "error name");
-  console.log(err.message);
+  console.log("wholeErr", typeof err);
   errorChain.process(err, req, res, next);
 });
 

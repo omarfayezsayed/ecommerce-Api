@@ -30,12 +30,30 @@ export class AuthController {
       accessToken: tokens.accessToken,
     });
   });
+  public refresh = asyncWrapper(async (req: Request, res: Response) => {
+    const refresToken = req.headers?.authorization?.split(" ")[1];
+    console.log(refresToken);
+
+    const tokens = await this.authService.refresh(refresToken!);
+    res.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
+  });
+  public logout = asyncWrapper(async (req: Request, res: Response) => {
+    const user = req.user as { id: string };
+    await this.authService.logOut(user.id);
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.json({ message: "Logged out successfully" });
+  });
   public googleCallback = asyncWrapper(async (req: any, res: Response) => {
     const tokens = await this.authService.issueTokens(req.user);
 
     this.setRefreshTokenCookie(res, tokens.refreshToken);
     res.json({
       accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     });
   });
   private setRefreshTokenCookie = (res: Response, refreshToken: string) => {
