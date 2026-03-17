@@ -1,5 +1,5 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { IAuthUser } from "../interfaces/iAuthUser";
+import { IAuthUser } from "../../../services/interfaces/iAuthUser";
 // import { IAuthUser } from '../interfaces/iAuthUser';
 
 export const createGoogleStrategy = (userService: IAuthUser) =>

@@ -1,5 +1,4 @@
 import { UserController } from "../controllers/user";
-import { UserRepository } from "../repositories/interfaces/user";
 import { MongoUserRepository } from "../repositories/mongoUser";
 import { UserService } from "../services/user";
 import { imageService } from "./imageProcessor";

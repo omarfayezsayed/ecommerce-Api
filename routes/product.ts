@@ -8,7 +8,9 @@ import { idParamDto } from "../dto/utils/idDto";
 import { validationHandler } from "../middlewares/validationHandler";
 import { productController } from "../composition/product";
 import { upload } from "../middlewares/uploads";
-
+import passport from "../middlewares/passport/PassportRegister";
+import { authorize } from "../composition/rbac";
+import { Permission } from "../rbac/rbacConfig";
 export const productRouter = express.Router({ mergeParams: true });
 
 // categoryRouter.use("/:id/subCategories", subCategoryRouter); // nested route
@@ -16,6 +18,8 @@ export const productRouter = express.Router({ mergeParams: true });
 productRouter
   .route("/")
   .post([
+    passport.authenticate("jwt", { session: false, failWithError: true }),
+    authorize(Permission.CREATE_PRODUCT),
     upload.fields([{ name: "imageCover" }, { name: "images" }]),
     validationHandler(createProductDto),
     productController.createProduct,
@@ -26,10 +30,14 @@ productRouter
   .route("/:id")
   .get([validationHandler(idParamDto, "params"), productController.getProduct])
   .delete([
+    authorize(Permission.DELETE_PRODUCT),
+    passport.authenticate("jwt", { session: false, failWithError: true }),
     validationHandler(idParamDto, "params"),
     productController.deleteProduct,
   ])
   .patch([
+    passport.authenticate("jwt", { session: false, failWithError: true }),
+    authorize(Permission.UPDATE_PRODUCT),
     upload.fields([{ name: "imageCover" }, { name: "images" }]),
     validationHandler(idParamDto, "params"),
     validationHandler(updateProductDto),

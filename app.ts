@@ -4,8 +4,9 @@ import "reflect-metadata";
 import express, { NextFunction, Request, Response, urlencoded } from "express";
 const app = express();
 import morgan from "morgan";
-import { connect } from "./config/dbConnection";
+import { connect } from "./config/mongoConnection";
 import { categoryRouter } from "./routes/category";
+import { connect as redisConnect } from "./config/redisConnection";
 import { subCategoryRouter } from "./routes/subCategory";
 import { brandRouter } from "./routes/brand";
 import { authRouter } from "./routes/auth";
@@ -17,9 +18,8 @@ import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
 
-import passport from "passport";
-// import { passport } from "./routes/auth";
 connect();
+redisConnect();
 // middlewares
 if (process.env.ENV_VARIABLE == "development") {
   app.use(morgan("dev"));

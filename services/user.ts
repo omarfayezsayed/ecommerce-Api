@@ -9,8 +9,7 @@ import { ImageService } from "./imageService";
 import { UserRepository } from "../repositories/interfaces/user";
 import { UserInternalDto } from "../dto/userDto/userInternalDto";
 import { IAuthUser } from "./interfaces/iAuthUser";
-import { asyncWrapper } from "../utils/asyncWrapper";
-import internal from "stream";
+
 export class UserService implements IAuthUser {
   private repository: UserRepository;
   private imageService: ImageService;
@@ -19,6 +18,74 @@ export class UserService implements IAuthUser {
     this.repository = repo;
     this.imageService = imageService;
   }
+  async getMe(userId: string) {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new apiError("no user with that id", StatusCodes.NOT_FOUND);
+    }
+    return {
+      name: user.name!,
+      phone: user.phone!,
+      email: user.email!,
+      isverified: user.isVerfied,
+      profileImage: user.profileImage,
+    };
+  }
+  async updateMe(
+    userId: string,
+    data: { name: string | undefined; phone: string | undefined },
+  ) {
+    await this.updateOne(userId, data);
+  }
+  async findbyResetCode(code: string): Promise<userDocumnet | null> {
+    const user = await this.repository.findOnebyResetCode(code);
+    return user;
+  }
+  async resetPassword(userId: string, password: string): Promise<void> {
+    await this.updateOne(userId, { password });
+  }
+  async changePassword(
+    userId: string,
+    newPassword: string,
+    oldPassword: string,
+  ) {
+    const user = await this.repository.findOneById(userId);
+    if (!user)
+      throw new apiError("no user with that id", StatusCodes.NOT_FOUND);
+    if (user.authProvider === "google") {
+      throw new apiError("can't change your password", StatusCodes.BAD_REQUEST);
+    }
+    const valid = bcrypt.compare(oldPassword, user.password!);
+    if (!valid) {
+      throw new apiError(
+        "wrong password please try again",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    await this.updateOne(userId, {
+      password: newPassword,
+      passwordChangedAt: new Date(),
+    });
+  }
+  async uploadProfileImage(userId: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new apiError("Must provide an image", StatusCodes.BAD_REQUEST);
+    }
+    await this.updateOne(userId, { file });
+  }
+
+  async findByVerificationCode(code: string): Promise<userDocumnet | null> {
+    const user = await this.repository.findOneByVerficationCode(code);
+    return user;
+  }
+  async findByResetCode(code: string): Promise<userDocumnet | null> {
+    const user = await this.repository.findOnebyResetCode(code);
+    return user;
+  }
+  async markAsVerified(userId: string): Promise<void> {
+    await this.updateOne(userId, { isVerfied: true });
+  }
+
   public findByEmail = async (email: string): Promise<userDocumnet | null> => {
     const user = await this.findOneByEmail(email);
     return user;
@@ -80,6 +147,7 @@ export class UserService implements IAuthUser {
     return brand;
   };
   updateOne = async (id: string, data: UserInternalDto) => {
+    // console.log("password", data.password);
     let blobName: string | undefined = "";
     if (data.file) {
       const uploadedImage = await this.imageService.uploadFromDto(
@@ -134,6 +202,7 @@ export class UserService implements IAuthUser {
       email: data.email,
       googleId: data.googleId,
       password: data.password,
+      passwordChangedAt: data.passwordChangedAt,
       phone: data.phone,
       isVerfied: data.isVerfied,
       role: data.role,

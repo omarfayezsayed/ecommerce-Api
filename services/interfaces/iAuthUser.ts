@@ -10,4 +10,9 @@ export interface IAuthUser {
     refreshToken: string | null,
     expiresAt: Date | null,
   ): Promise<void>;
+
+  findbyResetCode(code: string): Promise<userDocumnet | null>;
+  findByVerificationCode(code: string): Promise<userDocumnet | null>;
+  markAsVerified(userId: string): Promise<void>;
+  resetPassword(userId: string, password: string): Promise<void>;
 }

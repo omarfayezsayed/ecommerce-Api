@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { apiError } from "../../../utils/apiError";
 export class JwtTokenError extends ErrorHandlingChain {
   process(err: any, req: Request, res: Response, next: NextFunction): Response {
+    console.log("Error show me", err);
     if (err instanceof jwt.TokenExpiredError) {
       const error = new apiError(
         `Session expired, please login again`,
@@ -16,7 +17,7 @@ export class JwtTokenError extends ErrorHandlingChain {
       err instanceof jwt.JsonWebTokenError ||
       err.name === "AuthenticationError"
     ) {
-      const error = new apiError(`Unauthorizedd`, StatusCodes.UNAUTHORIZED);
+      const error = new apiError(`Unauthorized`, StatusCodes.UNAUTHORIZED);
       error.status;
       return this.sender.send(res, error);
     }

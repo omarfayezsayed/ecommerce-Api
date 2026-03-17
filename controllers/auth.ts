@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import { jwtGenerator } from "../utils/jwtGenerators";
 import { userService } from "../composition/user";
@@ -7,9 +7,11 @@ import { apiError } from "../utils/apiError";
 import { StatusCodes } from "http-status-codes";
 import { AuthService } from "../services/auth";
 import { UserInternalDto } from "../dto/userDto/userInternalDto";
+import { EmailService } from "../services/email";
 // import { asyncWrapper } from "../utils/asyncWrapper";
 export class AuthController {
   private authService: AuthService;
+
   constructor(authService: AuthService) {
     this.authService = authService;
   }
@@ -47,6 +49,24 @@ export class AuthController {
     res.clearCookie("refreshToken");
     res.json({ message: "Logged out successfully" });
   });
+  public verifyEmail = asyncWrapper(async (req: Request, res: Response) => {
+    const code = req.body.code as string;
+    await this.authService.verifyEmail(code);
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "Account verified",
+    });
+  });
+  public resendVerificationCode = asyncWrapper(
+    async (req: Request, res: Response) => {
+      const userEmail = req.body.email as string;
+      await this.authService.resendVerificationCode(userEmail);
+      res.status(StatusCodes.OK).json({
+        status: "success",
+        message: "Verification code send successfully to your email.",
+      });
+    },
+  );
   public googleCallback = asyncWrapper(async (req: any, res: Response) => {
     const tokens = await this.authService.issueTokens(req.user);
 
@@ -54,6 +74,21 @@ export class AuthController {
     res.json({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
+    });
+  });
+
+  public forgetPassword = asyncWrapper(async (req: any, res: Response) => {
+    const email = req.body.email as string;
+    const message = await this.authService.forgetPassword(email);
+    res.status(StatusCodes.OK).json(message);
+  });
+  public resetPassword = asyncWrapper(async (req: Request, res: Response) => {
+    const data = req.body as { code: string; newPassword: string };
+
+    await this.authService.resetPassword(data);
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "password Reset Successfully",
     });
   });
   private setRefreshTokenCookie = (res: Response, refreshToken: string) => {

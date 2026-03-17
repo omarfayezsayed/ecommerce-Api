@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { Request } from "express";
-import { IAuthUser } from "../interfaces/iAuthUser";
+import { IAuthUser } from "../../../services/interfaces/iAuthUser";
 
 export const createJwtStrategy = (userService: IAuthUser) =>
   new JwtStrategy(

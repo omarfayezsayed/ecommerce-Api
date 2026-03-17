@@ -1,13 +1,7 @@
 import express from "express";
-import passport from "passport";
+import passport from "../middlewares/passport/PassportRegister";
 import { authController } from "../composition/auth";
-import { createGoogleStrategy } from "../services/authStrategies/googleStrategy";
-import { createJwtStrategy } from "../services/authStrategies/jwtStrategy";
-import { userService } from "../composition/auth";
 export const authRouter = express.Router();
-
-passport.use("jwt", createJwtStrategy(userService));
-passport.use(createGoogleStrategy(userService));
 
 authRouter.route("/register").post(authController.register);
 authRouter.route("/logIn").post(authController.logIn);
@@ -31,3 +25,9 @@ authRouter
     passport.authenticate("google", { session: false }),
     authController.googleCallback,
   );
+
+authRouter.post("/verify-email", authController.verifyEmail);
+
+authRouter.post("/resend-verification", authController.resendVerificationCode);
+authRouter.post("/forget-password", authController.forgetPassword);
+authRouter.post("/reset-password", authController.resetPassword);

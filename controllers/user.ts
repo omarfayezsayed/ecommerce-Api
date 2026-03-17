@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { UserService } from "../services/user";
 import { queryParser } from "../utils/queryParser";
 import { UserInternalDto } from "../dto/userDto/userInternalDto";
+import { use } from "passport";
 export class UserController {
   private userService: UserService;
   constructor(userService: UserService) {
@@ -54,6 +55,48 @@ export class UserController {
     res.status(StatusCodes.OK).json({
       status: "success",
       data: user,
+    });
+  });
+  public uploadProfileImage = asyncWrapper(
+    async (req: Request, res: Response) => {
+      const profileImage = req.file;
+      const user = req.user as any;
+      await this.userService.uploadProfileImage(user.id!, profileImage!);
+      res.status(StatusCodes.OK).json({
+        status: "success",
+        message: "Image uploaded successfully",
+      });
+    },
+  );
+  public changePassword = asyncWrapper(async (req: Request, res: Response) => {
+    const user = req.user as any;
+    const oldPassword = req.body.oldPassword as string;
+    const newPassword = req.body.newPassword as string;
+    await this.userService.changePassword(user.id, newPassword, oldPassword);
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "Password changed successfully",
+    });
+  });
+  public getMe = asyncWrapper(async (req: Request, res: Response) => {
+    const user = req.user as any;
+    const data = await this.userService.getMe(user.id);
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      data,
+    });
+  });
+
+  public updateMe = asyncWrapper(async (req: Request, res: Response) => {
+    const user = req.user as any;
+    const data: { name: string | undefined; phone: undefined } = {
+      name: req.body.name,
+      phone: req.body.phone,
+    };
+    await this.userService.updateMe(user.id, data);
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "data changed successfully",
     });
   });
 }

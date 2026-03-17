@@ -3,6 +3,16 @@ import { queryBuilder } from "../utils/queryBuilder";
 import { UserRepository } from "./interfaces/user";
 
 export class MongoUserRepository implements UserRepository {
+  async findOnebyResetCode(
+    resetPasswordCode: string,
+  ): Promise<userDocumnet | null> {
+    const user = await User.findOne({ resetPasswordCode });
+    return user;
+  }
+  async findOneByVerficationCode(code: string): Promise<userDocumnet | null> {
+    const user = await User.findOne({ verificationCode: code });
+    return user;
+  }
   async findAll(queryObj?: any): Promise<Array<userDocumnet>> {
     const query = new queryBuilder(User.find(), queryObj)
       .sort()
