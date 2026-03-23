@@ -18,7 +18,8 @@ import { AzureStorageService } from "./azureStorage";
 import { StorageFolder } from "../utils/storageFolder";
 import { ImageProcessingService } from "./imageProcessing";
 import { ImageService } from "./imageService";
-export class ProductService {
+import { IReviewProductService } from "./interfaces/product";
+export class ProductService implements IReviewProductService {
   private repository: ProductRepository;
   private brandQuery: BrandQuery;
   private categoryQuery: CategoryQuery;
@@ -36,6 +37,21 @@ export class ProductService {
     this.categoryQuery = categoryQuery;
     this.subCategoryQuery = subCategoryQuery;
     this.imageService = imageService;
+  }
+  async updateRatings(
+    productId: string,
+    avgRating: number,
+    ratingQuantity: number,
+  ): Promise<void> {
+    await this.repository.updateOne(productId, {
+      ratingsAverage: avgRating,
+      ratingsQuantity: ratingQuantity,
+    });
+  }
+  async exists(productId: string): Promise<boolean> {
+    const product = await this.getOne(productId);
+
+    return !!product;
   }
 
   public createOne = async (

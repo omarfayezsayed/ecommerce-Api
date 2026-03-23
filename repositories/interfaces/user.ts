@@ -1,3 +1,4 @@
+import { Iproduct, productDocumnet } from "../../models/product";
 import { userDocumnet, Iuser } from "../../models/user";
 
 export interface UserRepository {
@@ -9,4 +10,11 @@ export interface UserRepository {
   deleteOne(id: string): Promise<any>;
   createOne(data: Partial<Iuser>): Promise<userDocumnet>;
   updateOne(id: string, data: Partial<Iuser>): Promise<userDocumnet | null>;
+
+  // wishList
+  addToWishlist(userId: string, productId: string): Promise<void>;
+  getWishlist(userId: string): Promise<Array<productDocumnet>>;
+  clearWishlist(userId: string): Promise<void>;
+  removeFromWishlist(userId: string, productId: string): Promise<void>;
+  isInWishlist(userId: string, productId: string): Promise<boolean>;
 }

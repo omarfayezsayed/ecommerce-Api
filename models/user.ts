@@ -1,5 +1,6 @@
-import mongoose, { Document, Types } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 import { UserRole } from "../utils/userRoles";
+import { Iproduct } from "./product";
 
 export interface Iuser {
   id: string;
@@ -17,6 +18,7 @@ export interface Iuser {
   refreshToken?: string;
   refreshTokenExpiresAt?: Date;
   passwordChangedAt?: Date;
+  wishList: [Iproduct];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,6 +70,12 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
       type: String,
       enum: ["local", "google"],
     },
+    wishList: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
     passwordChangedAt: { type: Date, default: null },
   },
   {

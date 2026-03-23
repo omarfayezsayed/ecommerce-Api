@@ -11,12 +11,15 @@ import { subCategoryRouter } from "./routes/subCategory";
 import { brandRouter } from "./routes/brand";
 import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
+import { reviewRouter } from "./routes/review";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
 import multer from "multer";
 
 import { errorChain } from "./middlewares/errors/handlingChain";
 import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
+import { UserRole } from "./rbac/rbacConfig";
+import { wishListRouter } from "./routes/withList";
 
 connect();
 redisConnect();
@@ -35,6 +38,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/wishList", wishListRouter);
 app.use("*", handleInvalidRoutes);
 
 // Global error Handler

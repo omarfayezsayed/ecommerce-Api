@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-import uniqueValidator from "mongoose-unique-validator";
 export interface Ibrand {
   name?: string;
   id: string;

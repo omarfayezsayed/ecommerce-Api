@@ -21,7 +21,7 @@ const categoryQuery: CategoryQuery = categoryService;
 
 const subCategoryQuery: subCategoryQuery = subCategoryService;
 
-const productService = new ProductService(
+export const productService = new ProductService(
   mongoProductRepository,
   brandQuery,
   categoryQuery,

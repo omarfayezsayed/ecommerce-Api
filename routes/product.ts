@@ -11,10 +11,11 @@ import { upload } from "../middlewares/uploads";
 import passport from "../middlewares/passport/PassportRegister";
 import { authorize } from "../composition/rbac";
 import { Permission } from "../rbac/rbacConfig";
+import { reviewRouter } from "./review";
 export const productRouter = express.Router({ mergeParams: true });
 
 // categoryRouter.use("/:id/subCategories", subCategoryRouter); // nested route
-
+productRouter.use("/:id/reviews", reviewRouter);
 productRouter
   .route("/")
   .post([

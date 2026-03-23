@@ -9,14 +9,20 @@ import { ImageService } from "./imageService";
 import { UserRepository } from "../repositories/interfaces/user";
 import { UserInternalDto } from "../dto/userDto/userInternalDto";
 import { IAuthUser } from "./interfaces/iAuthUser";
+import { IReviewProductService } from "./interfaces/product";
+import { IReviewUserService } from "./interfaces/user";
 
-export class UserService implements IAuthUser {
+export class UserService implements IAuthUser, IReviewUserService {
   private repository: UserRepository;
   private imageService: ImageService;
 
   constructor(repo: UserRepository, imageService: ImageService) {
     this.repository = repo;
     this.imageService = imageService;
+  }
+  async exists(userId: string): Promise<boolean> {
+    const user = await this.findById(userId);
+    return !!user;
   }
   async getMe(userId: string) {
     const user = await this.findById(userId);
