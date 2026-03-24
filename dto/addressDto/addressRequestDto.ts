@@ -39,30 +39,30 @@ export class UpdateAddressDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  city!: string;
+  city?: string;
 
   @Expose()
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  street!: string;
+  street?: string;
 
   @Expose()
   @Type(() => Number)
   @IsNumber()
   @IsOptional()
-  quantity!: number;
-  floorNumber!: number;
+  quantity?: number;
+  floorNumber?: number;
 
   @Expose()
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  phone!: string;
+  phone?: string;
 
   @Expose()
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  postalCode!: string;
+  postalCode?: string;
 }
