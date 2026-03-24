@@ -91,7 +91,7 @@ export class AuthService {
     if (!user) {
       throw new apiError("user not found", StatusCodes.NOT_FOUND);
     }
-    if (user.isVerfied) {
+    if (user.isVerified) {
       throw new apiError("Email already verified", StatusCodes.BAD_REQUEST);
     }
     const code = this.generateSixDigitCode();

@@ -28,7 +28,7 @@ export const createGoogleStrategy = (userService: IAuthUser) =>
             email,
             googleId: profile.id,
             name,
-            isVerfied: true,
+            isVerified: true,
             authProvider: "google",
           });
         }

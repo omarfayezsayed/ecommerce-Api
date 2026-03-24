@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import { UserRole } from "../utils/userRoles";
 import { Iproduct } from "./product";
-
+import { addressSchema, IAddress } from "./address";
 export interface Iuser {
   id: string;
   name: string;
@@ -11,14 +11,15 @@ export interface Iuser {
   googleId?: string;
   password?: string;
   phone?: string;
-  isVerfied: boolean;
+  isVerified: boolean;
   role: UserRole;
   blobName: string;
   authProvider: "local" | "google";
   refreshToken?: string;
   refreshTokenExpiresAt?: Date;
   passwordChangedAt?: Date;
-  wishList: [Iproduct];
+  wishList: Iproduct[];
+  addresses: IAddress[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,7 +54,7 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
     },
     googleId: String,
     phone: String,
-    isVerfied: {
+    isVerified: {
       type: Boolean,
       required: true,
       default: false,
@@ -76,6 +77,7 @@ export const UserSchema = new mongoose.Schema<userDocumnet>(
         ref: "Product",
       },
     ],
+    addresses: [addressSchema],
     passwordChangedAt: { type: Date, default: null },
   },
   {

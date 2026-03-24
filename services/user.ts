@@ -33,7 +33,7 @@ export class UserService implements IAuthUser, IReviewUserService {
       name: user.name!,
       phone: user.phone!,
       email: user.email!,
-      isverified: user.isVerfied,
+      isverified: user.isVerified,
       profileImage: user.profileImage,
     };
   }
@@ -210,7 +210,7 @@ export class UserService implements IAuthUser, IReviewUserService {
       password: data.password,
       passwordChangedAt: data.passwordChangedAt,
       phone: data.phone,
-      isVerfied: data.isVerfied,
+      isVerified: data.isVerfied,
       role: data.role,
       blobName: data.blobName,
       refreshToken: data.refreshToken,

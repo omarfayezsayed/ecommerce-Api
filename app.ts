@@ -12,6 +12,7 @@ import { brandRouter } from "./routes/brand";
 import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
 import { reviewRouter } from "./routes/review";
+import { addressRouter } from "./routes/address";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
 import multer from "multer";
 
@@ -40,6 +41,7 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/wishList", wishListRouter);
+app.use("/api/v1/address", addressRouter);
 app.use("*", handleInvalidRoutes);
 
 // Global error Handler

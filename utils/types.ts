@@ -3,12 +3,12 @@ import { UserRole } from "./userRoles";
 declare global {
   namespace Express {
     interface User {
-      _id: string;
+      //   _id: string;
       id: string;
       email: string;
       role: UserRole;
       isVerified: boolean;
-      isBanned: boolean;
+      //   isBanned: boolean;
       passwordChangedAt?: Date;
     }
 
