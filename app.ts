@@ -14,7 +14,10 @@ import { userRouter } from "./routes/user";
 import { reviewRouter } from "./routes/review";
 import { addressRouter } from "./routes/address";
 import { couponRouter } from "./routes/coupon";
+import { router } from "./routes/product2";
 import { handleInvalidRoutes } from "./middlewares/errors/invalidRoutes";
+import path from "path";
+import { docsRouter } from "./routes/docs";
 import multer from "multer";
 
 import { errorChain } from "./middlewares/errors/handlingChain";
@@ -38,12 +41,21 @@ app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/brands", brandRouter);
-app.use("/api/v1/products", productRouter);
+// app.use("/api/v1/products", productRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/coupons", couponRouter);
 app.use("/api/v1/wishList", wishListRouter);
 app.use("/api/v1/address", addressRouter);
+app.use("/api/v1/products2", router);
+// serve the OpenAPI spec file
+app.get("/openapi.yaml", (req, res) => {
+  const filePath = path.join(process.cwd(), "openapi.yaml");
+  res.sendFile(filePath);
+});
+
+// Swagger UI
+app.use("/docs", docsRouter);
 app.use("*", handleInvalidRoutes);
 
 // Global error Handler

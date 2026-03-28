@@ -1,0 +1,1119 @@
+openapi: 3.0.3
+info:
+  title: ecommerceAPI
+  version: 1.0.0
+  description: >-
+    RESTful backend for an e-commerce platform. Includes products, categories,
+    subcategories, brands, users, reviews, coupons, wishlist and address
+    management. Authentication uses JWT; some endpoints accept multipart file
+    uploads.
+servers:
+  - url: http://localhost:{port}
+    description: Local development server
+    variables:
+      port:
+        default: "4000"
+
+paths:
+  /api/v1/categories:
+    get:
+      tags: [Categories]
+      summary: List categories
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/search"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCategories"
+    post:
+      tags: [Categories]
+      summary: Create category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CategoryCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /api/v1/categories/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Categories]
+      summary: Get category by id
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+    patch:
+      tags: [Categories]
+      summary: Update category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CategoryUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+    delete:
+      tags: [Categories]
+      summary: Delete category
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/subCategories:
+    get:
+      tags: [SubCategories]
+      summary: List subcategories
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/search"
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [SubCategories]
+      summary: Create subcategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SubCategoryCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/subCategories/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [SubCategories]
+      summary: Get subcategory
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [SubCategories]
+      summary: Update subcategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SubCategoryUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [SubCategories]
+      summary: Delete subcategory
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/brands:
+    get:
+      tags: [Brands]
+      summary: List brands
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [Brands]
+      summary: Create brand
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BrandCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/brands/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Brands]
+      summary: Get brand
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Brands]
+      summary: Update brand
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BrandUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Brands]
+      summary: Delete brand
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/products:
+    get:
+      tags: [Products]
+      summary: List products
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/fields"
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category id
+        - in: query
+          name: brand
+          schema:
+            type: string
+          description: Filter by brand id
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedProducts"
+    post:
+      tags: [Products]
+      summary: Create product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /api/v1/products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Products]
+      summary: Get product
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    patch:
+      tags: [Products]
+      summary: Update product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Products]
+      summary: Delete product
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/products/{productId}/reviews:
+    parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Reviews]
+      summary: List reviews for a product
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [Reviews]
+      summary: Create a review for a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/reviews:
+    get:
+      tags: [Reviews]
+      summary: List reviews
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [Reviews]
+      summary: Create review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/reviews/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Reviews]
+      summary: Get review
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Reviews]
+      summary: Update review (owner only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Reviews]
+      summary: Delete review (owner only)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        "201":
+          description: Registered
+
+  /api/v1/auth/logIn:
+    post:
+      tags: [Auth]
+      summary: Log in and receive JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /api/v1/auth/logOut:
+    post:
+      tags: [Auth]
+      summary: Log out (invalidate token)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out
+
+  /api/v1/users:
+    get:
+      tags: [Users]
+      summary: List users
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [Users]
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Users]
+      summary: Update current user
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated
+
+  /api/v1/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Users]
+      summary: Get user by id
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Users]
+      summary: Update user (requires permission)
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Users]
+      summary: Delete user (requires permission)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/coupons:
+    get:
+      tags: [Coupons]
+      summary: List coupons (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [Coupons]
+      summary: Create coupon (protected)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/coupons/validate:
+    get:
+      tags: [Coupons]
+      summary: Validate coupon (protected)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+  /api/v1/coupons/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Coupons]
+      summary: Get coupon
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Coupons]
+      summary: Update coupon
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponCreate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Coupons]
+      summary: Delete coupon
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/wishList:
+    get:
+      tags: [WishList]
+      summary: Get wishlist (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    post:
+      tags: [WishList]
+      summary: Add item to wishlist (protected)
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+      responses:
+        "200":
+          description: Added
+    delete:
+      tags: [WishList]
+      summary: Clear wishlist (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Cleared
+  /api/v1/wishList/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags: [WishList]
+      summary: Remove wishlist item (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Removed
+
+  /api/v1/address:
+    get:
+      tags: [Address]
+      summary: List authenticated user's addresses (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Address"
+    post:
+      tags: [Address]
+      summary: Add address (protected)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressCreate"
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/address/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Address]
+      summary: Get address (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags: [Address]
+      summary: Update address (protected)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressUpdate"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      tags: [Address]
+      summary: Delete address (protected)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      description: Page number for pagination
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+      description: Number of items per page
+    sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+      description: Sort expression, e.g. `-createdAt` or `price`
+    fields:
+      name: fields
+      in: query
+      schema:
+        type: string
+      description: Comma-separated fields to include
+    search:
+      name: q
+      in: query
+      schema:
+        type: string
+      description: Full-text search term
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+    PaginatedCategories:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        total:
+          type: integer
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+
+    CategoryCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    CategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    SubCategoryCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        image:
+          type: string
+          format: binary
+        mainCategoryId:
+          type: string
+
+    SubCategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    Brand:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+
+    BrandCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    BrandUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        quantity:
+          type: integer
+        sold:
+          type: integer
+        price:
+          type: number
+        description:
+          type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        brand:
+          type: string
+        priceAfterDiscount:
+          type: number
+        ratingsAverage:
+          type: number
+        ratingsQuantity:
+          type: integer
+        colors:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+        imageCover:
+          type: string
+
+    ProductCreate:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        quantity:
+          type: integer
+        sold:
+          type: integer
+        price:
+          type: number
+        description:
+          type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        brand:
+          type: string
+        priceAfterDiscount:
+          type: number
+        ratingsAverage:
+          type: number
+        ratingsQuantity:
+          type: integer
+        colors:
+          type: array
+          items:
+            type: string
+        imageCover:
+          type: string
+          format: binary
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+
+    ProductUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        quantity:
+          type: integer
+        sold:
+          type: integer
+        price:
+          type: number
+        description:
+          type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        brand:
+          type: string
+        priceAfterDiscount:
+          type: number
+        ratingsAverage:
+          type: number
+        ratingsQuantity:
+          type: integer
+        colors:
+          type: array
+          items:
+            type: string
+        imageCover:
+          type: string
+          format: binary
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+
+    PaginatedProducts:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        total:
+          type: integer
+
+    ReviewCreate:
+      type: object
+      properties:
+        content:
+          type: string
+        productId:
+          type: string
+        userId:
+          type: string
+        ratings:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    ReviewUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+        ratings:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    UserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        profileImage:
+          type: string
+          format: binary
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        profileImage:
+          type: string
+          format: binary
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+
+    CouponCreate:
+      type: object
+      properties:
+        code:
+          type: string
+        discount:
+          type: number
+        expiresAt:
+          type: string
+          format: date-time
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        quantity:
+          type: integer
+        floorNumber:
+          type: integer
+        phone:
+          type: string
+        postalCode:
+          type: string
+
+    AddressCreate:
+      type: object
+      properties:
+        city:
+          type: string
+        street:
+          type: string
+        quantity:
+          type: integer
+        floorNumber:
+          type: integer
+        phone:
+          type: string
+        postalCode:
+          type: string
+
+    AddressUpdate:
+      type: object
+      properties:
+        city:
+          type: string
+        street:
+          type: string
+        quantity:
+          type: integer
+        floorNumber:
+          type: integer
+        phone:
+          type: string
+        postalCode:
+          type: string
+
+    WishList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"

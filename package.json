@@ -6,7 +6,9 @@
   "scripts": {
     "start:prod": "ENV_VARIABLE=production nodemon ./distjs/app.js",
     "dev": "npx tsc -w",
-    "start:dev": "nodemon ./distjs/app.js"
+    "start:dev": "nodemon ./distjs/app.js",
+    "test": "node --test test/**/*.test.js",
+    "serve-docs": "node -e \"console.log('Use /docs route on running server')\""
   },
   "author": "omar fayez",
   "license": "ISC",
@@ -33,7 +35,8 @@
     "redis": "^5.11.0",
     "reflect-metadata": "^0.2.2",
     "sharp": "^0.34.5",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "twilio": "^5.13.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
