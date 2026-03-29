@@ -1,3 +1,6 @@
 .env
 /distjs
 node_modules/
+script.js
+script.ts
+README.md
