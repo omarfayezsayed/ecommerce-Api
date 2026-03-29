@@ -11,13 +11,18 @@ export function validationHandler<T extends Object>(
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     console.log(req, "body inside validation");
+    // excludeExtraneousValues: true,
     const RequestData = plainToClass(dtoClass, req[properity], {
-      excludeExtraneousValues: true,
+      enableImplicitConversion: true,
+      exposeDefaultValues: true,
     });
     console.log(RequestData, "object");
     console.log(req.params.id);
+    // validationError: { target: false, value: true },
     const validationErrors = await validate(RequestData, {
-      validationError: { target: false, value: true },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      validationError: { target: false },
     });
     console.log(req.body, "body");
     if (!validationErrors.length) {
@@ -30,7 +35,10 @@ export function validationHandler<T extends Object>(
     });
     const responseValidationMessage = validationMessages.join(", ");
     return next(
-      new apiError(responseValidationMessage, StatusCodes.BAD_REQUEST),
+      new apiError(
+        "Validation failed: " + responseValidationMessage,
+        StatusCodes.BAD_REQUEST,
+      ),
     );
   };
 }

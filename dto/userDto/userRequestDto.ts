@@ -43,6 +43,7 @@ export class registerUserDto {
 
   @Expose()
   @IsString()
+  @IsEnum(UserRole)
   role!: UserRole;
 }
 

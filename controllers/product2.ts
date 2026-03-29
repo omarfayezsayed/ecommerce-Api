@@ -59,6 +59,7 @@ export class ProductController {
   });
 
   public addSize = asyncWrapper(async (req: Request, res: Response) => {
+    console.log("inside add sizes");
     const product = await this.productService.addSizeToProduct(
       req.params.id,
       req.body,
@@ -86,4 +87,87 @@ export class ProductController {
     await this.productService.deleteProductSize(productId, sizeId);
     res.status(StatusCodes.NO_CONTENT).json();
   });
+  //  create add variatn and update variant functions here, they will be similar to sizes but with extra checks for product type and unique color
+  public addVariant = asyncWrapper(async (req: Request, res: Response) => {
+    const product = await this.productService.addVariant(
+      req.params.id,
+      req.body,
+    );
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+      data: product,
+    });
+  });
+
+  public updateVariant = asyncWrapper(async (req: Request, res: Response) => {
+    const { id, variantId } = req.params;
+    const product = await this.productService.updateVariant(
+      id,
+      variantId,
+      req.body,
+    );
+    res.json({
+      status: "success",
+      data: product,
+    });
+  });
+
+  public deleteVariant = asyncWrapper(async (req: Request, res: Response) => {
+    const { id, variantId } = req.params;
+    await this.productService.deleteVariant(id, variantId);
+    res.status(StatusCodes.NO_CONTENT).json();
+  });
+
+  // add controller functions for adding updating and deleting variants here, they will be similar to sizes
+  public addVariantSize = asyncWrapper(async (req: Request, res: Response) => {
+    const { id, variantId } = req.params;
+    const product = await this.productService.addVariantSize(
+      id,
+      variantId,
+      req.body,
+    );
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+      data: product,
+    });
+  });
+
+  public updateVariantSize = asyncWrapper(
+    async (req: Request, res: Response) => {
+      const { id, variantId, sizeId } = req.params;
+      const product = await this.productService.updateVariantSize(
+        id,
+        variantId,
+        sizeId,
+        req.body,
+      );
+      res.json({
+        status: "success",
+        data: product,
+      });
+    },
+  );
+
+  public deleteVariantSize = asyncWrapper(
+    async (req: Request, res: Response) => {
+      const { id, variantId, sizeId } = req.params;
+      await this.productService.deleteVariantSize(id, variantId, sizeId);
+      res.status(StatusCodes.NO_CONTENT).json();
+    },
+  );
+
+  public addImagesToVariant = asyncWrapper(
+    async (req: Request, res: Response) => {
+      const { id, variantId } = req.params;
+      const product = await this.productService.addImagestoVariant(
+        id,
+        variantId,
+        req.files as Express.Multer.File[],
+      );
+      res.json({
+        status: "success",
+        data: product,
+      });
+    },
+  );
 }

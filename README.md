@@ -528,12 +528,8 @@ variantId: string,
 sizeId: string,
 data: Partial<ICreateSize>
 ) {
-const updateFields = Object.keys(data).reduce((acc, key) => {
-acc[`variants.$[variant].sizes.$[size].${key}`] = (data as any)[key];
-return acc;
-}, {} as any);
 
-    return Product.findByIdAndUpdate(
+    return await Product2.findByIdAndUpdate(
       productId,
       { $set: updateFields },
       {
