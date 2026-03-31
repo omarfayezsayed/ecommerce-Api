@@ -1,7 +1,8 @@
 import express from "express";
 import { productController } from "../composition/product2";
-import multer from "multer";
+
 import { upload } from "../middlewares/uploads";
+import { productValidationHandler } from "../middlewares/productValidationHandler";
 
 export const router = express.Router();
 
@@ -13,7 +14,7 @@ router.post(
 );
 router.get("/", productController.getAll);
 router.get("/:id", productController.getById);
-router.post("/", productController.create);
+router.post("/", productValidationHandler(), productController.create);
 router.patch("/:id", productController.update);
 router.delete("/:id", productController.delete);
 

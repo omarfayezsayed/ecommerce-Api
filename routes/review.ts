@@ -1,32 +1,45 @@
 import express from "express";
 import { reviewController, reviewService } from "../composition/review";
 import { validationHandler } from "../middlewares/validationHandler";
-import { updateReviewDto } from "../dto/reviewDto/reviewRequestDto";
+import {
+  createReviewDto,
+  updateReviewDto,
+} from "../dto/reviewDto/reviewRequestDto";
 import { isOwner } from "../middlewares/isOwner";
 import passport from "../middlewares/passport/PassportRegister";
+import { idParamDto } from "../dto/utils/idDto";
+import { authorize } from "../composition/rbac";
+import { Permission } from "../rbac/rbacConfig";
 
 export const reviewRouter = express.Router({ mergeParams: true });
-const find = async (id: string) => {
-  const review = await reviewService.getReview(id);
-  const userId = review.user as string;
-  return { user: userId };
-};
+// const find = async (id: string) => {
+//   const review = await reviewService.getReview(id);
+//   const userId = review.user as string;
+//   return { user: userId };
+// };
 reviewRouter
   .route("/")
-  .post(reviewController.createReview)
+  .post(
+    passport.authenticate("jwt", { session: false, failWithError: true }),
+    authorize(Permission.CREATE_REVIEW),
+    validationHandler(createReviewDto),
+    reviewController.createReview,
+  )
   .get(reviewController.getAllReviews);
 
 reviewRouter
   .route("/:id")
   .delete(
     passport.authenticate("jwt", { session: false, failWithError: true }),
-    isOwner(find),
+    authorize(Permission.DELETE_REVIEW),
+    validationHandler(idParamDto, "params"),
     reviewController.deleteReview,
   )
-  .get(reviewController.getReview)
+  .get(validationHandler(idParamDto, "params"), reviewController.getReview)
   .patch(
     passport.authenticate("jwt", { session: false, failWithError: true }),
-    isOwner(find),
+    authorize(Permission.UPDATE_REVIEW),
+    validationHandler(idParamDto, "params"),
     validationHandler(updateReviewDto),
     reviewController.updateReview,
   );

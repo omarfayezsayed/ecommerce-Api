@@ -15,8 +15,13 @@ import {
   ArrayUnique,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { ProductType } from "../domain/productFlex";
 
+export enum ProductType {
+  SIMPLE = "simple",
+  SIZES = "sizes_only",
+  COLORS = "variant",
+  SIZES_COLORS = "variant_with_sizes",
+}
 class PriceStockDto {
   @IsPositive()
   price!: number;
@@ -29,7 +34,7 @@ class PriceStockDto {
 export class SizeDto extends PriceStockDto {
   @IsString()
   @IsNotEmpty()
-  size!: string;
+  name!: string;
 }
 
 export class ColorDto extends PriceStockDto {
@@ -43,11 +48,11 @@ export class ColorDto extends PriceStockDto {
   images?: string[];
 }
 
-export class SizeInColorDto extends PriceStockDto {
-  @IsString()
-  @IsNotEmpty()
-  size!: string;
-}
+// export class SizeInColorDto extends PriceStockDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   size!: string;
+// }
 
 export class ColorWithSizesDto {
   @IsString()
@@ -61,15 +66,19 @@ export class ColorWithSizesDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SizeInColorDto)
+  @Type(() => SizeDto)
   @ArrayMinSize(1)
-  sizes!: SizeInColorDto[];
+  sizes!: SizeDto[];
 }
 
 class BaseProductDto {
   @IsString()
   @IsNotEmpty()
   title!: string;
+
+  @IsOptional()
+  @IsString()
+  slug?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -80,23 +89,24 @@ class BaseProductDto {
 
   @IsOptional()
   @IsMongoId()
+  subCategory?: string;
+
+  @IsOptional()
+  @IsMongoId()
   brand?: string;
 
-  @IsEnum(["simple", "sizes", "colors", "sizes_colors"])
+  @IsEnum(ProductType)
   productType!: ProductType;
 
   @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+  @IsNumber()
+  @Type(() => Number)
+  priceAfterDiscount!: Number;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsOptional()
-  @IsString()
-  imageCover?: string;
+  @IsNumber()
+  @Type(() => Number)
+  basePrice?: number;
 }
 
 export class CreateSimpleProductDto extends BaseProductDto {
@@ -143,39 +153,20 @@ export class UpdateProductDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  slug?: string;
+
+  @IsOptional()
   @IsMongoId()
   category?: string;
 
   @IsOptional()
   @IsMongoId()
+  subCategory?: string;
+
+  @IsOptional()
+  @IsMongoId()
   brand?: string;
-
-  @IsOptional()
-  @IsEnum(["simple", "sizes", "colors", "sizes_colors"])
-  productType?: ProductType;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  images?: string[];
-
-  @IsOptional()
-  @IsString()
-  imageCover?: string;
-
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => SizeDto)
-  sizes?: SizeDto[];
-
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => ColorDto)
-  variants?: ColorDto[] | ColorWithSizesDto[];
 
   @IsOptional()
   @IsPositive()
@@ -185,17 +176,27 @@ export class UpdateProductDto {
   @IsNumber()
   @Min(0)
   stock?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  priceAfterDiscount!: Number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  basePrice?: number;
 }
 
 export function createDtoByType(type: ProductType) {
   switch (type) {
-    case "simple":
+    case ProductType.SIMPLE:
       return CreateSimpleProductDto;
-    case "sizes":
+    case ProductType.SIZES:
       return CreateSizesProductDto;
-    case "colors":
+    case ProductType.COLORS:
       return CreateColorsProductDto;
-    case "sizes_colors":
+    case ProductType.SIZES_COLORS:
       return CreateSizesColorsProductDto;
     default:
       return CreateSimpleProductDto;

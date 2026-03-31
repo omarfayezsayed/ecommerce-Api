@@ -2,6 +2,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   Length,
 } from "class-validator";
@@ -20,7 +21,7 @@ export class CreateAddressDto {
   quantity!: number;
   floorNumber!: number;
 
-  @IsString()
+  @IsPhoneNumber("EG")
   @IsNotEmpty()
   phone!: string;
 
@@ -46,9 +47,9 @@ export class UpdateAddressDto {
   quantity?: number;
   floorNumber?: number;
 
-  @IsString()
-  @IsNotEmpty()
   @IsOptional()
+  @IsNotEmpty()
+  @IsPhoneNumber("EG")
   phone?: string;
 
   @IsString()

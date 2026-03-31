@@ -14,7 +14,18 @@ servers:
       port:
         default: "4000"
 
+  - url: https://api.yourdomain.com
+    description: Production server
+
 paths:
+  /api/v1/docs:
+    get:
+      tags: [Docs]
+      summary: Serve API documentation
+      responses:
+        "200":
+          description: Swagger UI / OpenAPI spec
+
   /api/v1/categories:
     get:
       tags: [Categories]
@@ -97,6 +108,8 @@ paths:
     get:
       tags: [SubCategories]
       summary: List subcategories
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/limit"
@@ -104,6 +117,12 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubCategory"
     post:
       tags: [SubCategories]
       summary: Create subcategory
@@ -118,6 +137,10 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubCategory"
 
   /api/v1/subCategories/{id}:
     parameters:
@@ -129,9 +152,15 @@ paths:
     get:
       tags: [SubCategories]
       summary: Get subcategory
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubCategory"
     patch:
       tags: [SubCategories]
       summary: Update subcategory
@@ -146,6 +175,10 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubCategory"
     delete:
       tags: [SubCategories]
       summary: Delete subcategory
@@ -165,6 +198,12 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Brand"
     post:
       tags: [Brands]
       summary: Create brand
@@ -193,6 +232,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brand"
     patch:
       tags: [Brands]
       summary: Update brand
@@ -207,6 +250,10 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brand"
     delete:
       tags: [Brands]
       summary: Delete brand
@@ -292,6 +339,10 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
     delete:
       tags: [Products]
       summary: Delete product
@@ -314,9 +365,17 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
     post:
       tags: [Reviews]
       summary: Create a review for a product
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -326,6 +385,10 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
 
   /api/v1/reviews:
     get:
@@ -337,9 +400,17 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
     post:
       tags: [Reviews]
       summary: Create review
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -349,6 +420,10 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
 
   /api/v1/reviews/{id}:
     parameters:
@@ -363,6 +438,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
     patch:
       tags: [Reviews]
       summary: Update review (owner only)
@@ -377,6 +456,10 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
     delete:
       tags: [Reviews]
       summary: Delete review (owner only)
@@ -385,6 +468,22 @@ paths:
       responses:
         "204":
           description: Deleted
+
+  /api/v1/auth/google:
+    get:
+      tags: [Auth]
+      summary: Start Google OAuth login
+      responses:
+        "302":
+          description: Redirect to Google OAuth consent
+
+  /api/v1/auth/google/callback:
+    get:
+      tags: [Auth]
+      summary: Google OAuth callback
+      responses:
+        "200":
+          description: OAuth success
 
   /api/v1/auth/register:
     post:
@@ -436,19 +535,120 @@ paths:
         "200":
           description: Logged out
 
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: New access token
+
+  /api/v1/auth/verify-email:
+    post:
+      tags: [Auth]
+      summary: Verify email with code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: Email verified
+
+  /api/v1/auth/resend-verification:
+    post:
+      tags: [Auth]
+      summary: Resend verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Verification email sent
+
+  /api/v1/auth/forget-password:
+    post:
+      tags: [Auth]
+      summary: Send reset password code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Reset code sent
+
+  /api/v1/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password using code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                code:
+                  type: string
+                password:
+                  type: string
+                  minLength: 5
+                  maxLength: 15
+      responses:
+        "200":
+          description: Password reset
+
   /api/v1/users:
     get:
       tags: [Users]
       summary: List users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/limit"
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
     post:
       tags: [Users]
       summary: Create user
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -458,6 +658,10 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
 
   /api/v1/users/me:
     get:
@@ -492,9 +696,15 @@ paths:
     get:
       tags: [Users]
       summary: Get user by id
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
     patch:
       tags: [Users]
       summary: Update user (requires permission)
@@ -526,6 +736,12 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Coupon"
     post:
       tags: [Coupons]
       summary: Create coupon (protected)
@@ -540,6 +756,10 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coupon"
 
   /api/v1/coupons/validate:
     get:
@@ -571,6 +791,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coupon"
     patch:
       tags: [Coupons]
       summary: Update coupon
@@ -584,6 +808,10 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coupon"
     delete:
       tags: [Coupons]
       summary: Delete coupon
@@ -602,12 +830,17 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishList"
     post:
       tags: [WishList]
       summary: Add item to wishlist (protected)
       security:
         - bearerAuth: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -618,6 +851,10 @@ paths:
       responses:
         "200":
           description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishList"
     delete:
       tags: [WishList]
       summary: Clear wishlist (protected)
@@ -687,6 +924,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
     patch:
       tags: [Address]
       summary: Update address (protected)
@@ -701,11 +942,296 @@ paths:
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
     delete:
       tags: [Address]
       summary: Delete address (protected)
       security:
         - bearerAuth: []
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/product2:
+    get:
+      tags: [Product2]
+      summary: List products (flex schema)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product2Base"
+    post:
+      tags: [Product2]
+      summary: Create product (flex schema)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2Create"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+
+  /api/v1/product2/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Product2]
+      summary: Get product (flex schema)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+    patch:
+      tags: [Product2]
+      summary: Update product metadata (not variants/sizes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2Update"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+    delete:
+      tags: [Product2]
+      summary: Delete product
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/product2/{id}/images:
+    post:
+      tags: [Product2]
+      summary: Add product-level images (simple, sizes_only)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+
+  /api/v1/product2/{id}/sizes:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Product2]
+      summary: Add size (sizes_only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2SizeCreate"
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+
+  /api/v1/product2/{productId}/sizes/{sizeId}:
+    parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: sizeId
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      tags: [Product2]
+      summary: Update size (sizes_only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2SizeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+    delete:
+      tags: [Product2]
+      summary: Delete size (sizes_only)
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/product2/{id}/variants:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Product2]
+      summary: Add variant (variant or variant_with_sizes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2VariantCreate"
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+
+  /api/v1/product2/{id}/variants/{variantId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      tags: [Product2]
+      summary: Update variant (variant or variant_with_sizes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2VariantUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+    delete:
+      tags: [Product2]
+      summary: Delete variant
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/product2/{id}/variants/{variantId}/sizes:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Product2]
+      summary: Add size to variant (variant_with_sizes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2VariantSizeCreate"
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+
+  /api/v1/product2/{id}/variants/{variantId}/sizes/{sizeId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: sizeId
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      tags: [Product2]
+      summary: Update variant size (variant_with_sizes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product2VariantSizeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product2Base"
+    delete:
+      tags: [Product2]
+      summary: Delete variant size
       responses:
         "204":
           description: Deleted
@@ -716,6 +1242,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   parameters:
     page:
       name: page
@@ -749,6 +1276,13 @@ components:
       schema:
         type: string
       description: Full-text search term
+    idParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Mongo ObjectId
 
   schemas:
     ErrorResponse:
@@ -759,15 +1293,35 @@ components:
         statusCode:
           type: integer
 
-    PaginatedCategories:
+    Paginated:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Category"
+            type: object
         total:
           type: integer
+
+    PaginatedCategories:
+      allOf:
+        - $ref: "#/components/schemas/Paginated"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Category"
+
+    PaginatedProducts:
+      allOf:
+        - $ref: "#/components/schemas/Paginated"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product"
 
     Category:
       type: object
@@ -783,9 +1337,12 @@ components:
 
     CategoryCreate:
       type: object
+      required: [name]
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 15
         slug:
           type: string
         image:
@@ -797,21 +1354,42 @@ components:
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 15
         slug:
           type: string
         image:
           type: string
           format: binary
 
-    SubCategoryCreate:
+    SubCategory:
       type: object
       properties:
+        id:
+          type: string
         name:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+        category:
+          type: string
+
+    SubCategoryCreate:
+      type: object
+      required: [name, category]
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 15
+        slug:
           type: string
         image:
           type: string
           format: binary
-        mainCategoryId:
+        category:
           type: string
 
     SubCategoryUpdate:
@@ -819,9 +1397,15 @@ components:
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 15
+        slug:
+          type: string
         image:
           type: string
           format: binary
+        category:
+          type: string
 
     Brand:
       type: object
@@ -837,9 +1421,12 @@ components:
 
     BrandCreate:
       type: object
+      required: [name]
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 15
         slug:
           type: string
         image:
@@ -851,6 +1438,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 15
         slug:
           type: string
         image:
@@ -899,19 +1488,24 @@ components:
 
     ProductCreate:
       type: object
+      required: [title, quantity, price, description, category]
       properties:
         title:
           type: string
+          minLength: 10
+          maxLength: 200
         slug:
           type: string
         quantity:
           type: integer
+          minimum: 1
         sold:
           type: integer
         price:
           type: number
         description:
           type: string
+          minLength: 10
         category:
           type: string
         subCategory:
@@ -942,16 +1536,20 @@ components:
       properties:
         title:
           type: string
+          minLength: 10
+          maxLength: 200
         slug:
           type: string
         quantity:
           type: integer
+          minimum: 1
         sold:
           type: integer
         price:
           type: number
         description:
           type: string
+          minLength: 10
         category:
           type: string
         subCategory:
@@ -977,18 +1575,9 @@ components:
             type: string
             format: binary
 
-    PaginatedProducts:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/Product"
-        total:
-          type: integer
-
     ReviewCreate:
       type: object
+      required: [productId, userId, ratings]
       properties:
         content:
           type: string
@@ -997,25 +1586,43 @@ components:
         userId:
           type: string
         ratings:
-          type: integer
+          type: number
           minimum: 1
           maximum: 5
 
     ReviewUpdate:
       type: object
+      required: [ratings]
       properties:
         content:
           type: string
         ratings:
-          type: integer
+          type: number
           minimum: 1
           maximum: 5
 
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        ratings:
+          type: number
+        product:
+          type: string
+        user:
+          type: string
+
     UserRegister:
       type: object
+      required: [name, email, password, role]
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 20
         slug:
           type: string
         profileImage:
@@ -1023,18 +1630,24 @@ components:
           format: binary
         email:
           type: string
+          format: email
         password:
           type: string
+          minLength: 5
+          maxLength: 15
         phone:
           type: string
         role:
           type: string
+          enum: [user, admin, manager]
 
     UserUpdate:
       type: object
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 20
         slug:
           type: string
         profileImage:
@@ -1042,23 +1655,68 @@ components:
           format: binary
         email:
           type: string
+          format: email
         password:
           type: string
+          minLength: 5
+          maxLength: 15
         phone:
           type: string
         role:
           type: string
+          enum: [user, admin, manager]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        phone:
+          type: string
+        profileImage:
+          type: string
 
     CouponCreate:
       type: object
+      required: [name, expire, discount]
       properties:
-        code:
+        name:
           type: string
-        discount:
-          type: number
-        expiresAt:
+        expire:
           type: string
           format: date-time
+        discount:
+          type: number
+
+    CouponUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        expire:
+          type: string
+          format: date-time
+        discount:
+          type: number
+
+    Coupon:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        expire:
+          type: string
+          format: date-time
+        discount:
+          type: number
 
     Address:
       type: object
@@ -1070,9 +1728,9 @@ components:
         street:
           type: string
         quantity:
-          type: integer
+          type: number
         floorNumber:
-          type: integer
+          type: number
         phone:
           type: string
         postalCode:
@@ -1080,15 +1738,17 @@ components:
 
     AddressCreate:
       type: object
+      required: [city, street, quantity, phone, postalCode]
       properties:
         city:
           type: string
         street:
           type: string
         quantity:
-          type: integer
+          type: number
+          minimum: 0
         floorNumber:
-          type: integer
+          type: number
         phone:
           type: string
         postalCode:
@@ -1102,9 +1762,9 @@ components:
         street:
           type: string
         quantity:
-          type: integer
+          type: number
         floorNumber:
-          type: integer
+          type: number
         phone:
           type: string
         postalCode:
@@ -1116,4 +1776,206 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Product"
+            type: string
+
+    # Product2 (flex product) schemas
+    Product2Base:
+      type: object
+      required: [title, description, category, productType]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        brand:
+          type: string
+        productType:
+          type: string
+          enum: [simple, sizes_only, variant, variant_with_sizes]
+        isActive:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: string
+        imageCover:
+          type: string
+        basePrice:
+          type: number
+        priceAfterDiscount:
+          type: number
+
+    Product2Simple:
+      allOf:
+        - $ref: "#/components/schemas/Product2Base"
+        - type: object
+          required: [price, stock]
+          properties:
+            productType:
+              type: string
+              enum: [simple]
+            price:
+              type: number
+            stock:
+              type: number
+
+    Product2Size:
+      type: object
+      required: [name, price, stock]
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+
+    Product2SizesOnly:
+      allOf:
+        - $ref: "#/components/schemas/Product2Base"
+        - type: object
+          required: [sizes]
+          properties:
+            productType:
+              type: string
+              enum: [sizes_only]
+            sizes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product2Size"
+
+    Product2Variant:
+      type: object
+      required: [color]
+      properties:
+        color:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        price:
+          type: number
+        stock:
+          type: number
+
+    Product2VariantWithSizes:
+      type: object
+      required: [color, sizes]
+      properties:
+        color:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        sizes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product2Size"
+
+    Product2Colors:
+      allOf:
+        - $ref: "#/components/schemas/Product2Base"
+        - type: object
+          required: [variants]
+          properties:
+            productType:
+              type: string
+              enum: [variant]
+            variants:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product2Variant"
+
+    Product2ColorsWithSizes:
+      allOf:
+        - $ref: "#/components/schemas/Product2Base"
+        - type: object
+          required: [variants]
+          properties:
+            productType:
+              type: string
+              enum: [variant_with_sizes]
+            variants:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product2VariantWithSizes"
+
+    Product2Create:
+      oneOf:
+        - $ref: "#/components/schemas/Product2Simple"
+        - $ref: "#/components/schemas/Product2SizesOnly"
+        - $ref: "#/components/schemas/Product2Colors"
+        - $ref: "#/components/schemas/Product2ColorsWithSizes"
+
+    Product2Update:
+      allOf:
+        - $ref: "#/components/schemas/Product2Base"
+        - type: object
+          properties:
+            price:
+              type: number
+            stock:
+              type: number
+            sizes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product2Size"
+            variants:
+              type: array
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/Product2Variant"
+                  - $ref: "#/components/schemas/Product2VariantWithSizes"
+
+    Product2SizeCreate:
+      $ref: "#/components/schemas/Product2Size"
+
+    Product2SizeUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+
+    Product2VariantCreate:
+      $ref: "#/components/schemas/Product2Variant"
+
+    Product2VariantUpdate:
+      type: object
+      properties:
+        color:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        price:
+          type: number
+        stock:
+          type: number
+        sizes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product2Size"
+
+    Product2VariantSizeCreate:
+      $ref: "#/components/schemas/Product2Size"
+
+    Product2VariantSizeUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number

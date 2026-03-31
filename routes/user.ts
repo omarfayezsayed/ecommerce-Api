@@ -10,6 +10,10 @@ import passport from "../middlewares/passport//PassportRegister";
 
 export const userRouter = express.Router();
 // signUpUserDto
+
+userRouter.use(
+  passport.authenticate("jwt", { session: false, failWithError: true }),
+);
 userRouter.route("/").get([userController.findAllUsers]);
 
 userRouter
@@ -19,21 +23,12 @@ userRouter
     validationHandler(registerUserDto),
     userController.createUser,
   ]);
-userRouter.get(
-  "/me",
-  passport.authenticate("jwt", { session: false, failWithError: true }),
-  userController.getMe,
-);
-userRouter.patch(
-  "/me",
-  passport.authenticate("jwt", { session: false, failWithError: true }),
-  userController.updateMe,
-);
+userRouter.get("/me", userController.getMe);
+userRouter.patch("/me", userController.updateMe);
 userRouter
   .route("/:id")
   .get([validationHandler(idParamDto, "params"), userController.getUser])
   .patch([
-    passport.authenticate("jwt", { session: false, failWithError: true }),
     authorize(Permission.UPDATE_USER),
     upload.single("profileImage"),
     validationHandler(idParamDto, "params"),
@@ -41,25 +36,17 @@ userRouter
     userController.updateUser,
   ])
   .delete([
-    passport.authenticate("jwt", { session: false, failWithError: true }),
     authorize(Permission.DELETE_USER),
     validationHandler(idParamDto, "params"),
-    passport.authenticate("jwt", { session: false, failWithError: true }),
-    authorize(Permission.DELETE_USER),
     userController.deleteUser,
   ]);
 
 userRouter.post(
   "/me/image",
-  passport.authenticate("jwt", { session: false, failWithError: true }),
   upload.single("profileImage"),
   userController.uploadProfileImage,
 );
-userRouter.patch(
-  "/me/password",
-  passport.authenticate("jwt", { session: false, failWithError: true }),
-  userController.changePassword,
-);
+userRouter.patch("/me/password", userController.changePassword);
 
 // router.patch('/me', authenticate, userController.updateMe);
 // router.delete('/me', authenticate, userController.deleteMe);

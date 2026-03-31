@@ -1,17 +1,37 @@
-import mongoose, { Schema, Types, InferSchemaType } from "mongoose";
+import mongoose, {
+  Schema,
+  Types,
+  InferSchemaType,
+  HydratedDocument,
+} from "mongoose";
 
-const CartItemSchema = new Schema(
-  {
-    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    quantity: { type: Number, required: true, min: 1, default: 1 },
+export interface ICartItem<TProduct = Types.ObjectId> {
+  id: string;
+  product: TProduct; // reference to Product2
+  quantity: number;
+  price: number; // snapshot of price at time of adding
+  variantId?: string; // optional, for variant products
+  sizeId?: string; // optional, for size-based products
+}
 
-    // Optional snapshot fields (useful if product price/name changes later)
-    priceAtAdd: { type: Number, min: 0 },
-    nameAtAdd: { type: String, trim: true },
-    imageAtAdd: { type: String, trim: true },
-  },
-  { _id: false },
-);
+export interface ICart {
+  id: string;
+  user: Types.ObjectId; // reference to User
+  items: ICartItem[];
+  coupon?: string;
+  subTotal: number;
+  total: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const CartItemSchema = new Schema({
+  product: { type: Schema.Types.ObjectId, ref: "Product2", required: true },
+  quantity: { type: Number, required: true, min: 1, default: 1 },
+  price: { type: Number, required: true, min: 0 },
+  variantId: { type: Schema.Types.ObjectId },
+  sizeId: { type: Schema.Types.ObjectId },
+});
 
 const CartSchema = new Schema(
   {
@@ -19,40 +39,21 @@ const CartSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
 
     items: { type: [CartItemSchema], default: [] },
 
     // Optional totals (can be computed on the fly; keep if you want faster reads)
-    subtotal: { type: Number, min: 0, default: 0 },
-    discountTotal: { type: Number, min: 0, default: 0 },
-    taxTotal: { type: Number, min: 0, default: 0 },
-    shippingTotal: { type: Number, min: 0, default: 0 },
-    grandTotal: { type: Number, min: 0, default: 0 },
-
-    currency: { type: String, default: "USD", trim: true },
-
-    status: {
-      type: String,
-      enum: ["active", "converted", "abandoned"],
-      default: "active",
-      index: true,
-    },
-
-    expiresAt: { type: Date, index: true }, // optional TTL handling (set TTL index separately if needed)
+    coupon: { type: String },
+    subTotal: { type: Number, required: true, default: 0 },
+    total: { type: Number, required: true, default: 0 },
   },
   { timestamps: true },
 );
 
-// Ensure 1 active cart per user (optional but common)
-CartSchema.index(
-  { user: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: "active" } },
-);
+export type CartSchemaType = InferSchemaType<typeof CartSchema> & {
+  _id: Types.ObjectId;
+};
+export type CartDocument = HydratedDocument<CartSchemaType>;
 
-export type Cart = InferSchemaType<typeof CartSchema> & { _id: Types.ObjectId };
-
-const CartModel = mongoose.models.Cart || mongoose.model("Cart", CartSchema);
-export default CartModel;
-export { CartSchema };
+export const CartModel = mongoose.model<CartSchemaType>("Cart", CartSchema);

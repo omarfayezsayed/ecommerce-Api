@@ -25,6 +25,7 @@ import { apiError } from "./utils/apiError";
 import { productRouter } from "./routes/product";
 import { UserRole } from "./rbac/rbacConfig";
 import { wishListRouter } from "./routes/withList";
+import { cartRouter } from "./routes/cart";
 
 connect();
 redisConnect();
@@ -47,6 +48,7 @@ app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/coupons", couponRouter);
 app.use("/api/v1/wishList", wishListRouter);
 app.use("/api/v1/address", addressRouter);
+app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/products2", router);
 // serve the OpenAPI spec file
 app.get("/openapi.yaml", (req, res) => {
@@ -74,5 +76,5 @@ app.listen(port, () => {
 
 process.on("unhandledRejection", (err) => {
   console.error(`unhandledRejection Errors ${err}`);
-  process.exit(1);
+  // process.exit(1);
 });

@@ -11,6 +11,10 @@ import {
 } from "../models/product2";
 import { ProductValidatorFactory } from "../validatiors/product/productValidatorFactory";
 import { StorageFolder } from "../utils/storageFolder";
+import { BrandQuery } from "./interfaces/brand";
+import { CategoryQuery } from "./interfaces/category";
+import { subCategoryQuery } from "./interfaces/subcategory";
+
 // Centralized error messages for consistency
 const ERRORS = {
   NOT_FOUND: "Product not found",
@@ -37,6 +41,9 @@ export class ProductService {
   constructor(
     private productRepository: MongoProductRepository,
     private imageService: ImageService,
+    private brandQuery: BrandQuery,
+    private categoryQuery: CategoryQuery,
+    private subCategoryQuery: subCategoryQuery,
   ) {}
 
   // ── Internal helpers (kept in-file) ─────────────────────────────────────
@@ -112,6 +119,37 @@ export class ProductService {
       throw new apiError(ERRORS.VARIANT_SIZE_EXISTS, StatusCodes.BAD_REQUEST);
   }
 
+  private checkCategoryExists = async (categoryId: string) => {
+    const exists = await this.categoryQuery.existsById(categoryId);
+    if (!exists)
+      throw new apiError("Category does not exist", StatusCodes.NOT_FOUND);
+  };
+
+  private checkBrandExists = async (brandId: string) => {
+    const exists = await this.brandQuery.existsById(brandId);
+    if (!exists)
+      throw new apiError("Brand does not exist", StatusCodes.NOT_FOUND);
+  };
+
+  private checkSubCategoryExists = async (subCategoryId: string) => {
+    const exists = await this.subCategoryQuery.existsById(subCategoryId);
+    if (!exists)
+      throw new apiError("SubCategory does not exist", StatusCodes.NOT_FOUND);
+  };
+  private checkthatSubCategoryBelongsToCategory = async (
+    subCategoryId: string,
+    categoryId: string,
+  ) => {
+    const subCategory = await this.subCategoryQuery.existsById(subCategoryId);
+    if (!subCategory)
+      throw new apiError("SubCategory does not exist", StatusCodes.NOT_FOUND);
+    console.log(subCategory.category.toString(), "---------------", categoryId);
+    if (subCategory.category.toString() !== categoryId)
+      throw new apiError(
+        "SubCategory does not belong to the specified category",
+        StatusCodes.BAD_REQUEST,
+      );
+  };
   //  simple crud
   public getAll = async () => {
     return await this.productRepository.findAll();
@@ -125,6 +163,18 @@ export class ProductService {
     const validator = ProductValidatorFactory.getValidator(data.productType);
     validator.validate(data);
 
+    const promises = [this.checkCategoryExists(data.category)];
+    if (data.brand) promises.push(this.checkBrandExists(data.brand));
+    if (data.subCategory) {
+      promises.push(this.checkSubCategoryExists(data.subCategory));
+      promises.push(
+        this.checkthatSubCategoryBelongsToCategory(
+          data.subCategory,
+          data.category,
+        ),
+      );
+    }
+    await Promise.all(promises);
     return await this.productRepository.create(data);
   };
 

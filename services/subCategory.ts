@@ -27,7 +27,7 @@ export class SubCategoryService implements subCategoryQuery {
   public existsById = async (
     id: string,
   ): Promise<subCategoryDocument | null> => {
-    const subcategory = await this.repository.findOne(id);
+    const subcategory = await this.repository.findOne(id, false);
     return subcategory;
   };
   public createOne = async (
@@ -56,7 +56,7 @@ export class SubCategoryService implements subCategoryQuery {
   };
 
   public findOne = async (id: string) => {
-    const subCategory = await this.repository.findOne(id);
+    const subCategory = await this.repository.findOne(id, true);
     if (!subCategory) {
       throw new apiError(
         `no subCategory with that id:${id}`,

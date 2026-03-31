@@ -32,7 +32,6 @@ subCategoryRouter
   .route("/:id")
   .get([
     passport.authenticate("jwt", { session: false, failWithError: true }),
-
     validationHandler(idParamDto, "params"),
     subCategoryController.getSubCategory,
   ])
@@ -47,7 +46,6 @@ subCategoryRouter
   .delete([
     passport.authenticate("jwt", { session: false, failWithError: true }),
     authorize(Permission.DELETE_SUBCATEGORY),
-
     validationHandler(idParamDto, "params"),
     subCategoryController.deleteSubCategory,
   ]);

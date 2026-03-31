@@ -36,9 +36,13 @@ export class MongoSubCategoryRepository implements SubCategoryRepository {
       .build();
     return await query;
   };
-  public findOne = async (id: String): Promise<subCategoryDocument | null> => {
-    const subCategory = await Subcategory.findById(id).populate("category");
-    return subCategory;
+  public findOne = async (
+    id: String,
+    populate: boolean = true,
+  ): Promise<subCategoryDocument | null> => {
+    let query = Subcategory.findById(id);
+    if (populate) query = query.populate("category");
+    return await query;
   };
   public updateOne = async (
     id: String,

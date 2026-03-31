@@ -27,6 +27,7 @@ export class ProductController {
   });
 
   public create = asyncWrapper(async (req: Request, res: Response) => {
+    console.log("herer iside controller");
     const product = await this.productService.create(req.body);
     res.status(StatusCodes.CREATED).json({
       status: "success",
