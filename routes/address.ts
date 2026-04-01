@@ -18,7 +18,7 @@ addressRouter.use(
 );
 addressRouter
   .route("/")
-  .get(authorize(Permission.READ_ALL_ADDRESSES), addressController.getAll)
+  .get(authorize(Permission.READ_ALL_OWN_ADDRESSES), addressController.getAll)
   .post(validationHandler(CreateAddressDto), addressController.add);
 addressRouter
   .route("/:id")

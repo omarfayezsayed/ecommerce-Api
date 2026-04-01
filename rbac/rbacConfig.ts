@@ -45,6 +45,7 @@ export enum Permission {
   CREATE_ORDER = "create:order",
   READ_ORDER = "read:order",
   UPDATE_ORDER = "update:order",
+  UPDATE_ORDER_STATUS = "update:order_status",
   DELETE_ORDER = "delete:order",
   READ_ALL_ORDERS = "read:all_orders",
 
@@ -73,6 +74,7 @@ export enum Permission {
   READ_ADDRESS = "read:address",
   UPDATE_ADDRESS = "update:address",
   DELETE_ADDRESS = "delete:address",
+  READ_ALL_OWN_ADDRESSES = "read:all_own_addresses",
   READ_ALL_ADDRESSES = "read:all_addresses",
 
   // cart
@@ -117,6 +119,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.UPDATE_ADDRESS,
     Permission.DELETE_ADDRESS,
     Permission.READ_ALL_ADDRESSES,
+    Permission.READ_ALL_OWN_ADDRESSES,
 
     Permission.READ_CART,
     Permission.UPDATE_CART,
@@ -150,6 +153,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.READ_ORDER,
     Permission.CREATE_ORDER,
     Permission.UPDATE_ORDER,
+    Permission.UPDATE_ORDER_STATUS,
     Permission.DELETE_ORDER,
 
     Permission.READ_REVIEW,
@@ -162,7 +166,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.READ_ALL_COUPONS,
 
     Permission.READ_ADDRESS,
-
+    Permission.READ_ALL_OWN_ADDRESSES,
     Permission.READ_CART,
     Permission.UPDATE_CART,
   ],

@@ -26,6 +26,7 @@ import { productRouter } from "./routes/product";
 import { UserRole } from "./rbac/rbacConfig";
 import { wishListRouter } from "./routes/withList";
 import { cartRouter } from "./routes/cart";
+import { orderRouter } from "./routes/order";
 
 connect();
 redisConnect();
@@ -49,6 +50,7 @@ app.use("/api/v1/coupons", couponRouter);
 app.use("/api/v1/wishList", wishListRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/products2", router);
 // serve the OpenAPI spec file
 app.get("/openapi.yaml", (req, res) => {

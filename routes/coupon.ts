@@ -13,9 +13,9 @@ import { Permission } from "../rbac/rbacConfig";
 
 export const couponRouter = express.Router();
 
-// couponRouter.use(
-//   passport.authenticate("jwt", { session: false, failWithError: true }),
-// );
+couponRouter.use(
+  passport.authenticate("jwt", { session: false, failWithError: true }),
+);
 couponRouter.route("/validate").get(couponController.validate);
 couponRouter
   .route("/")

@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { ClientSession } from "mongoose";
 import { CartRepository } from "../repositories/interfaces/cart";
 import { apiError } from "../utils/apiError";
 import { MongoProductRepository } from "../repositories/mongoProduct2";
@@ -169,6 +170,13 @@ export class CartService {
     cart.coupon = undefined;
     await this.recomputeTotals(cart, 0);
     return await this.cartRepository.save(cart);
+  };
+
+  public clearForOrder = async (
+    userId: string,
+    session?: ClientSession,
+  ): Promise<CartDocument | null> => {
+    return await this.cartRepository.clear(userId, session);
   };
 
   private async resolvePriceAndStock(

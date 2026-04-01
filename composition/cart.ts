@@ -10,7 +10,7 @@ const productRepository = new MongoProductRepository();
 const couponRepository = new MongoCouponRepository();
 const couponService = new CouponService(couponRepository);
 
-const cartService = new CartService(
+export const cartService = new CartService(
   cartRepository,
   productRepository,
   couponService,

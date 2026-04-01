@@ -15,7 +15,7 @@ const categoryQuery: CategoryQuery = categoryService;
 
 const subCategoryQuery: subCategoryQuery = subCategoryService;
 const productRepository = new MongoProductRepository();
-const productService = new ProductService(
+export const productService = new ProductService(
   productRepository,
   imageService,
   brandQuery,

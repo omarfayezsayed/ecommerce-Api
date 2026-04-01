@@ -1,5 +1,6 @@
 import { Icategory } from "../models/category";
 import { IsubCategory } from "../models/subCategory";
+import { ClientSession, Types } from "mongoose";
 import {
   populatedProduct2,
   Product2,
@@ -195,5 +196,136 @@ export class MongoProductRepository {
       { $pull: { "variants.$.sizes": { _id: sizeId } } },
       { new: true },
     );
+  }
+
+  async decrementStockAtomic(
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    sizeId?: string,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const id = new Types.ObjectId(productId);
+
+    if (variantId && sizeId) {
+      const result = await Product2.updateOne(
+        { _id: id, productType: "variant_with_sizes" },
+        {
+          $inc: {
+            "variants.$[v].sizes.$[s].stock": -quantity,
+            sold: quantity,
+          },
+        },
+        {
+          session,
+          arrayFilters: [
+            { "v._id": new Types.ObjectId(variantId) },
+            {
+              "s._id": new Types.ObjectId(sizeId),
+              "s.stock": { $gte: quantity },
+            },
+          ],
+        },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    if (variantId) {
+      const result = await Product2.updateOne(
+        {
+          _id: id,
+          productType: "variant",
+          "variants._id": new Types.ObjectId(variantId),
+          "variants.stock": { $gte: quantity },
+        },
+        { $inc: { "variants.$.stock": -quantity, sold: quantity } },
+        { session },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    if (sizeId) {
+      const result = await Product2.updateOne(
+        {
+          _id: id,
+          productType: "sizes_only",
+          "sizes._id": new Types.ObjectId(sizeId),
+          "sizes.stock": { $gte: quantity },
+        },
+        { $inc: { "sizes.$.stock": -quantity, sold: quantity } },
+        { session },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    const result = await Product2.updateOne(
+      { _id: id, productType: "simple", stock: { $gte: quantity } },
+      { $inc: { stock: -quantity, sold: quantity } },
+      { session },
+    );
+    return result.modifiedCount > 0;
+  }
+
+  async incrementStockAtomic(
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    sizeId?: string,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const id = new Types.ObjectId(productId);
+
+    if (variantId && sizeId) {
+      const result = await Product2.updateOne(
+        { _id: id, productType: "variant_with_sizes" },
+        {
+          $inc: {
+            "variants.$[v].sizes.$[s].stock": quantity,
+            sold: -quantity,
+          },
+        },
+        {
+          session,
+          arrayFilters: [
+            { "v._id": new Types.ObjectId(variantId) },
+            { "s._id": new Types.ObjectId(sizeId) },
+          ],
+        },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    if (variantId) {
+      const result = await Product2.updateOne(
+        {
+          _id: id,
+          productType: "variant",
+          "variants._id": new Types.ObjectId(variantId),
+        },
+        { $inc: { "variants.$.stock": quantity, sold: -quantity } },
+        { session },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    if (sizeId) {
+      const result = await Product2.updateOne(
+        {
+          _id: id,
+          productType: "sizes_only",
+          "sizes._id": new Types.ObjectId(sizeId),
+        },
+        { $inc: { "sizes.$.stock": quantity, sold: -quantity } },
+        { session },
+      );
+      return result.modifiedCount > 0;
+    }
+
+    const result = await Product2.updateOne(
+      { _id: id, productType: "simple" },
+      { $inc: { stock: quantity, sold: -quantity } },
+      { session },
+    );
+    return result.modifiedCount > 0;
   }
 }

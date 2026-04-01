@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { ClientSession } from "mongoose";
 import { MongoProductRepository } from "../repositories/mongoProduct2";
 import { ImageService } from "./imageService";
 import { apiError } from "../utils/apiError";
@@ -435,5 +436,37 @@ export class ProductService {
         sizeNames.add(name);
       }
     }
+  };
+
+  public reserveStock = async (
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    sizeId?: string,
+    session?: ClientSession,
+  ): Promise<boolean> => {
+    return await this.productRepository.decrementStockAtomic(
+      productId,
+      quantity,
+      variantId,
+      sizeId,
+      session,
+    );
+  };
+
+  public releaseStock = async (
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    sizeId?: string,
+    session?: ClientSession,
+  ): Promise<boolean> => {
+    return await this.productRepository.incrementStockAtomic(
+      productId,
+      quantity,
+      variantId,
+      sizeId,
+      session,
+    );
   };
 }

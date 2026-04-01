@@ -18,7 +18,6 @@ export class CreateAddressDto {
 
   @Type(() => Number)
   @IsNumber()
-  quantity!: number;
   floorNumber!: number;
 
   @IsPhoneNumber("EG")

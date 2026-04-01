@@ -24,6 +24,7 @@ export class CouponController {
   });
 
   public create = asyncWrapper(async (req: Request, res: Response) => {
+    console.log("geere");
     const coupon = await this.couponService.create(req.body);
     res.status(StatusCodes.CREATED).json({
       status: "success",

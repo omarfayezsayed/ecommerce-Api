@@ -1,191 +1,214 @@
 # ecommerceAPI
 
-A TypeScript Node.js RESTful backend for an e-commerce platform providing products, categories, users, reviews, coupons, addresses, wishlist, and RBAC with image handling and Redis caching.
+Professional e-commerce backend API built with TypeScript and Express, designed with modular architecture and resource-oriented endpoints.
+
+The platform supports authentication, catalog management, reviews, wishlist, cart, coupons, addresses, and a transactional order workflow with both cash and Stripe card payments.
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Key Features](#key-features)
+- [Overview](#overview)
 - [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
+- [Tools and Integrations](#tools-and-integrations)
+- [API Resources and Functionalities](#api-resources-and-functionalities)
+- [Authentication and Authorization](#authentication-and-authorization)
+- [Order and Payment Behavior](#order-and-payment-behavior)
+- [Architecture and Design Patterns](#architecture-and-design-patterns)
 - [Environment Variables](#environment-variables)
-- [Installation & Run](#installation--run)
-- [Scripts](#scripts)
-- [Project Structure](#project-structure)
-- [Architecture & Flow](#architecture--flow)
-- [Authentication & Authorization](#authentication--authorization)
-- [Database & Caching](#database--caching)
-- [Image Storage & Processing](#image-storage--processing)
-- [Validation & Error Handling](#validation--error-handling)
-- [Extending the API](#extending-the-api)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+- [Run and Scripts](#run-and-scripts)
+- [Notes and Caveats](#notes-and-caveats)
 
-## Project Overview
+## Overview
 
-ecommerceAPI is a modular backend that separates concerns into controllers, services, and repositories. It provides CRUD operations for products, categories, subcategories, reviews, coupons, and user-related features (profile, addresses, wishlist). It includes JWT-based auth and role-based access control (RBAC), optional Azure image storage support, and Redis caching utilities.
+This API follows a clean layered architecture and exposes REST endpoints grouped by business resources.
 
-## Key Features
-
-- User registration & JWT authentication
-- Role-based access control (RBAC) and role seeding
-- Product management with category/subcategory relationships
-- Reviews (CRUD) with ownership checks
-- Address management per user
-- Coupons creation & validation
-- Wishlist management
-- Image uploading & optional Azure storage
-- Redis integration for caching
-- Clean separation: controllers → services → repositories
+- Focus on clear business boundaries (Auth, Users, Products, Cart, Orders, etc.)
+- Permission-based access control (RBAC)
+- DTO-based request validation
+- Transaction-safe order processing
 
 ## Tech Stack
 
-- Node.js + TypeScript
+- Node.js
+- TypeScript
 - Express.js
 - MongoDB (Mongoose)
 - Redis
-- Multer (file uploads)
-- Optional Azure Blob Storage for images
+- Passport.js (JWT + Google OAuth)
+- Stripe
+- Azure Blob Storage
+- Multer
+- Sharp
+- class-validator
+- class-transformer
+- Nodemailer
 
-## Prerequisites
+## Tools and Integrations
 
-- Node.js (v16+ recommended)
-- npm or yarn
-- MongoDB instance (local or cloud)
-- Redis instance (local or cloud)
-- (Optional) Azure Storage account if using Azure for images
+- MongoDB for persistent data
+- Redis for temporary data and caching scenarios
+- Stripe for card checkout and webhook payment confirmation
+- Azure Blob Storage for image storage
+- Sharp for image processing and optimization
+- Nodemailer for email workflows
 
-## Environment Variables
+## API Resources and Functionalities
 
-Create a `.env` file in the project root with values similar to:
+### Auth
 
-```
-PORT=4000
-NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/ecommerce
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your_jwt_secret_here
-JWT_EXPIRES_IN=7d
-AZURE_STORAGE_ACCOUNT=your_account_name
-AZURE_STORAGE_KEY=your_storage_key
-AZURE_CONTAINER_NAME=images
-```
+- Register with email/password
+- Login with email/password
+- Refresh token
+- Logout
+- Google login (OAuth)
+- Verify email
+- Resend verification code
+- Forget password
+- Reset password
 
-Adjust names/values to match your deployment.
+### Users
 
-## Installation & Run
+- Create user
+- Read profile/current user
+- Read users list
+- Read user by id
+- Update profile/user
+- Change password
+- Upload/update profile image
+- Delete user
 
-1. Install dependencies:
+### Brands
 
-```bash
-npm install
-# or
-yarn
-```
+- Create brand
+- List brands
+- Get brand details
+- Update brand
+- Delete brand
 
-2. Development start (with ts-node/ts-dev if configured):
+### Categories
 
-```bash
-npm run dev
-```
+- Create category
+- List categories
+- Get category details
+- Update category
+- Delete category
 
-3. Build and run production:
+### Subcategories
 
-```bash
-npm run build
-npm start
-```
+- Create subcategory
+- List subcategories
+- Get subcategory details
+- Update subcategory
+- Delete subcategory
 
-The API entry point is `app.ts` and compiled output is placed in `distjs/` when built.
+### Products
 
-## Scripts
+- Create product
+- List products
+- Get product details
+- Update product
+- Delete product
+- Add product images
+- Add/update/delete sizes
+- Add/update/delete variants
+- Add/update/delete variant sizes
+- Add images to variants
 
-Check `package.json` for exact scripts. Typical scripts:
+### Reviews
 
-- `dev` — run in development (watch)
-- `build` — compile TypeScript to JavaScript
-- `start` — run compiled code
-- `lint` / `test` — if configured in your `package.json`
+- Create review
+- List reviews
+- Get review details
+- Update review
+- Delete review
 
-## Project Structure (high-level)
+### Coupons
 
-- `app.ts` — application entry
-- `config/` — DB and Redis connection utilities
-- `routes/` — route definitions
-- `controllers/` — request handlers
-- `services/` — business logic
-- `repositories/` — data access (Mongo implementations)
-- `models/` — Mongoose schemas
-- `dto/` — request/response DTOs
-- `mappers/` — map models ↔ DTOs
-- `middlewares/` — auth, validation, upload handlers
-- `utils/` — helpers: `apiError`, `asyncWrapper`, JWT helpers, query parsers
-- `composition/` — cross-cutting utilities (image processing, rbac, etc.)
-- `distjs/` — compiled JavaScript output
+- Create coupon
+- List coupons
+- Get coupon details
+- Update coupon
+- Delete coupon
+- Validate coupon code
 
-## Architecture & Flow
+### Wishlist
 
-- Routes receive requests and call controllers.
-- Controllers validate and forward to services.
-- Services implement business rules and call repositories for persistence.
-- Repositories handle MongoDB-specific operations (via Mongoose).
-- Middlewares handle authentication, authorization, validation, and file uploads.
-- Utilities provide shared functionality like error classes and JWT generation.
+- Add product to wishlist
+- Get wishlist
+- Remove product from wishlist
+- Clear wishlist
 
-## Authentication & Authorization
+### Addresses
 
-- JWT-based authentication; tokens created and validated by utilities in `utils/`.
-- RBAC implemented with role definitions and seed scripts located in `rbac/`.
-- Authorization middleware enforces role & ownership checks for protected routes.
+- Create address
+- List user addresses
+- Get address by id
+- Update address
+- Delete address
 
-## Database & Caching
+### Cart
 
-- MongoDB stores primary data (users, products, reviews, coupons, etc.).
-- Redis used for caching and fast key-value operations via connection in `config/redisConnection.ts`.
+- Get current cart
+- Add item to cart
+- Update item quantity
+- Remove item from cart
+- Apply coupon to cart
+- Remove coupon from cart
 
-## Image Storage & Processing
+### Orders
 
-- Local storage supported via upload middleware and `utils/storageFolder.ts`.
-- Optional Azure Blob Storage integration in `services/azureStorage.ts`.
-- Image processing utilities are in `composition/imageProcessor.ts` and `services/imageProcessing.ts`.
+- Place order
+- List user orders
+- Get order details
+- Update order status
+- Delete order
+- Stripe webhook handler for payment confirmation
 
-## Validation & Error Handling
+### Docs
 
-- Request validation handled by middleware in `middlewares/validationHandler.ts`.
-- Centralized error class `apiError` in `utils/apiError.ts`.
-- Async route wrapper `utils/asyncWrapper.ts` simplifies error propagation.
+- Interactive API docs endpoint
+- OpenAPI yaml endpoint
 
-## Extending the API
+## Authentication and Authorization
 
-To add a new resource:
+- JWT-based authentication for protected endpoints
+- Google OAuth login support
+- RBAC permissions on resource actions (create/read/update/delete and custom actions)
 
-1. Add Mongoose `models/<resource>.ts`.
-2. Create repository `repositories/mongo<Resource>.ts`.
-3. Add service in `services/<resource>.ts`.
-4. Add controller in `controllers/<resource>.ts`.
-5. Define routes in `routes/<resource>.ts`.
-6. Add DTOs and mappers under `dto/` and `mappers/` to shape requests/responses.
+## Order and Payment Behavior
 
-Follow existing folder patterns to keep consistency.
+- Supported statuses: pending, confirmed, shipped, delivered
 
-## Troubleshooting
+Cash payment:
 
-- Mongo connection issues: verify `MONGO_URI` and network access; see `config/mongoConnection.ts`.
-- Redis issues: validate `REDIS_URL` and ensure Redis service is running.
-- Upload issues: validate multer config in `middlewares/uploads.ts` and storage paths in `utils/storageFolder.ts`.
-- JWT/auth issues: check token generation and `JWT_SECRET`.
+- Order is created as confirmed
+- Stock is reserved immediately
+- Cart is cleared in the same transaction
 
-## Contributing
+Card payment:
 
-- Fork the repository, create a feature branch, add tests, and open a PR.
-- Keep changes focused and follow TypeScript style used in the codebase.
-- Document new endpoints and update this README where appropriate.
+- Stripe Checkout session is created
+- Order is created as pending
+- Checkout URL is returned to the client
+- Stock reservation happens after successful Stripe webhook
 
-## API Documentation (suggested next step)
+Webhook success behavior:
 
-I can extract all routes and produce an endpoint list (method, path, controller, required auth) or generate an OpenAPI/Swagger spec or Postman collection if you want.
+- Reserve stock
+- Mark order as paid and confirmed
+- Clear cart
+- Run in a transaction for consistency
 
-## License
+## Architecture and Design Patterns
 
-Add a `LICENSE` file to the repository with your chosen license (MIT/Apache-2.0/etc.) if you plan to publish or share.
+Architecture style:
+
+- Layered architecture (Routes -> Controllers -> Services -> Repositories -> Models)
+
+Patterns used:
+
+- Repository Pattern
+- Service Layer Pattern
+- Composition Root / Dependency Injection
+- Strategy Pattern (payment strategy & validation of Products)
+- Factory Pattern (product type validation)
+- Chain of Responsibility (error handling)
